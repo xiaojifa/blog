@@ -25,8 +25,8 @@ public interface ITopicTypeService extends IService<TopicType> {
 
     /**
      * 获取首页文章类型树形目录
-     * @param articleTypeParentId
+     * @param topicTypeParentId
      * @return
      */
-    List<TopicTypeTreeVo> getIndexTopicTypeList(String articleTypeParentId);
+    List<TopicTypeTreeVo> getIndexTopicTypeList(String topicTypeParentId);
 }

@@ -17,8 +17,6 @@
                     <div class = "col-xs-6 col-sm-3" style = "padding: 2px;">
                         <div class = "card">
                             <a href = "/topic?topicId=${(topicVo.topicId)!}" style = "text-decoration:none">
-                                <img class = "cardimg" src = "${(topicVo.topicCoverUrl)!}"
-                                     alt = "${(topicVo.topicTitle)!}">
                                 <div class = "card-heading"><strong>${(topicVo.topicTitle)!}</strong></div>
                                 <div class = "card-content text-muted">
                                     <i class = "icon-time"></i>

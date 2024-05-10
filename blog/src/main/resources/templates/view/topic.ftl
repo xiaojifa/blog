@@ -146,7 +146,7 @@
     }
 
     function goodComment(obj, commentTId) {
-        $.post("/goodComment", {
+        $.post("/goodCommentT", {
                 commentTId: commentTId
             },
             function (data) {
@@ -172,12 +172,12 @@
             zuiMsg("请填写评论");
             return;
         }
-        $.post("/user/saveComment", {
+        $.post("/user/saveCommentT", {
                 topicId: topicId,
                 commentTContent: commentTContent
             },
             function (data) {
-                if (data.code == 200) {
+                if (data.code === 200) {
                     zuiSuccessMsg("评论成功~");
                     $('#commentTContent').val("");
                     addCommentItem(data.data.commentTTime, data.data.commentTGoodNumber, data.data.userName, data.data.commentTContent, data.data.commentTId, 1, 0)

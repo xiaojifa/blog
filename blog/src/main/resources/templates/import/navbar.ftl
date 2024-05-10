@@ -1,14 +1,14 @@
-<div style="margin-bottom: 2px;" class="col-xs-12">
-    <div class="col-xs-6" style="padding-left: 2px;">
-        <h2 style="color: #ff2fc5;padding: 0;margin: 2px;">NSDA论坛</h2>
-        <small style="color: #df66ff;">&emsp;- 游戏&学习 - </small>
+    <div style="margin-bottom: 2px;" class="col-xs-12">
+        <div class="col-xs-6" style="padding-left: 2px;">
+            <h2 style="color: #ff2fc5;padding: 0;margin: 2px;">NSDA论坛</h2>
+            <small style="color: #df66ff;">&emsp;- 游戏&学习 - </small>
+        </div>
+        <div class="col-xs-6">
+            <span class="btn btn-mini btn-danger pull-right" style="margin-top: 10px;">
+                <a style="text-decoration:none;color: #ccffbc;" href="/app/app.apk"><i class="icon-android"></i> 安卓APP</a>
+            </span>
+        </div>
     </div>
-    <div class="col-xs-6">
-        <span class="btn btn-mini btn-danger pull-right" style="margin-top: 10px;">
-            <a style="text-decoration:none;color: #ccffbc;" href="/app/app.apk"><i class="icon-android"></i> 安卓APP</a>
-        </span>
-    </div>
-</div>
 </div>
 
 <nav class="navbar navbar-inverse" role="navigation" style="margin-bottom: 5px;">
@@ -54,6 +54,7 @@
                         <li>
                             <a href="/user/manager"><i class="icon-user"></i> 个人中心</a>
                         <li>
+                        <li>
                         <#if (user.userPublishArticle)?? && (user.userPublishArticle) == 1>
                             <li><a href="/user/publishArticle"><i class="icon-edit"></i> 发布文章</a></li>
                         </#if>
@@ -62,6 +63,7 @@
                         <#if (user.userPublishTopic)?? && (user.userPublishTopic) == 1>
                             <li><a href="/user/publishTopic"><i class="icon-edit"></i> 发布话题</a></li>
                         </#if>
+                        <li>
                         <li>
                             <a href="/logout"><i class="icon-signout"></i> 退出登录</a>
                         <li>

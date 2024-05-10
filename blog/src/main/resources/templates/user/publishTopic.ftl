@@ -12,9 +12,6 @@
             <i class="icon-edit"></i> 发布话题
         </div>
         <div class="panel-body">
-            <div class="col-xs-12 col-sm-3" style="padding: 2px;">
-                <img src="${(topic.topicCoverUrl)!'/img/null_topic_cover.gif'}" style="width: 100%;">
-            </div>
             <div class="col-xs-12 col-sm-9" style="padding: 2px;">
                 <form class="form-horizontal">
                     <input type="hidden" id="topicId" name="topicId" value="${(topic.topicId)!}">
@@ -152,7 +149,7 @@
         }
 
         let formData = new FormData();
-        formData.append("topicCoverFile", $("#topicCoverFile")[0].files[0]);
+        // formData.append("topicCoverFile", $("#topicCoverFile")[0].files[0]);
         formData.append("topicId", topicId);
         formData.append("topicTitle", topicTitle);
         formData.append("topicTypeId", topicTypeId);

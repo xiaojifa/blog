@@ -181,7 +181,6 @@ public class ViewController {
         return "/view/login";
     }
 
-
     /**
      * 用户登录方法
      *
