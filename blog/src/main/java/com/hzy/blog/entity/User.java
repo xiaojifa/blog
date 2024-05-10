@@ -45,6 +45,11 @@ public class User implements Serializable {
     private Integer userPublishArticle;
 
     /**
+     * 是否可以发布话题 0不能，1可以发布
+     */
+    private Integer userPublishTopic;
+
+    /**
      * 是否冻结
      */
     private Integer userFrozen;

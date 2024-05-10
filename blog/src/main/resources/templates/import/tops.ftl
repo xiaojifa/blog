@@ -28,4 +28,4 @@
 
 </head>
 <body style="background-color: #F5F5F5;">
-<div class="container">
+<div>

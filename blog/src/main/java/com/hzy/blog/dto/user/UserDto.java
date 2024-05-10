@@ -3,7 +3,6 @@ package com.hzy.blog.dto.user;
 import lombok.Data;
 
 import javax.validation.constraints.NotBlank;
-import javax.validation.constraints.NotNull;
 
 /**
  * @author Fa Xiaoji 14439
@@ -37,6 +36,11 @@ public class UserDto {
      * 是否可以发布文章 0不能，1可以发布
      */
     private Integer userPublishArticle;
+
+    /**
+     * 是否可以发布话题 0不能，1可以发布
+     */
+    private Integer userPublishTopic;
 
 
 }

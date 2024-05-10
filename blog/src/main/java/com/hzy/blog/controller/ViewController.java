@@ -64,6 +64,8 @@ public class ViewController {
     @Resource
     private ICommentReplyService commentReplyService;
     @Resource
+    private ICommentTService commentTService;
+    @Resource
     private ServletContext servletContext;
     @Resource
     private IAdTypeService adTypeService;
@@ -77,6 +79,8 @@ public class ViewController {
     private ITopicTagService topicTagService;
     @Resource
     private ITopicTypeService topicTypeService;
+    @Resource
+    private ITopicTagListService topicTagListService;
 
     /**
      * 清除首页缓存
@@ -346,6 +350,30 @@ public class ViewController {
     }
 
     /**
+     * 话题列表
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/topic/list")
+    public String topicListView(Integer pageNumber, String topicTitle, String topicTypeId, Model model) {
+        Page<TopicVo> topicPage = new Page<>(Objects.isNull(pageNumber) ? 1 : pageNumber, 24);
+        IPage<TopicVo> topicVoIPage = topicService.topicListView(topicPage, topicTitle, topicTypeId);
+
+        //文章列表
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+
+        //文章分类名称
+        if (StrUtil.isNotBlank(topicTypeId)) {
+            TopicType topicType = topicTypeService.getOne(Wrappers.<TopicType>lambdaQuery().eq(TopicType::getTopicTypeId, topicTypeId).select(TopicType::getTopicTypeName), false);
+            model.addAttribute("topicTypeName", topicType.getTopicTypeName());
+            model.addAttribute("topicTypeId", topicTypeId);
+        }
+
+        return "/view/topicList";
+    }
+
+    /**
      * 文章列表
      *
      * @param pageNumber
@@ -369,6 +397,34 @@ public class ViewController {
         return "/view/articleList";
     }
 
+    /**
+     * 获取标签对应的话题列表
+     *
+     * @param topicTagId
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/tag/topic/list")
+    public String tagTopicList(String topicTagId, Integer pageNumber, Model model) {
+        if (StrUtil.isBlank(topicTagId)) {
+            return "redirect:/";
+        }
+        if (Objects.isNull(pageNumber) || pageNumber < 1) {
+            pageNumber = 1;
+        }
+        Page<TopicVo> topicPage = new Page<>(Objects.isNull(pageNumber) ? 1 : pageNumber, 24);
+        IPage<TopicVo> topicVoIPage = topicService.tagTopicList(topicPage, topicTagId);
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+
+        //获取标签类型
+        TopicTag topicTag = topicTagService.getOne(Wrappers.<TopicTag>lambdaQuery().eq(TopicTag::getTopicTagId, topicTagId));
+        if (Objects.nonNull(topicTag)) {
+            model.addAttribute("topicTagName", topicTag.getTopicTagName());
+        }
+
+        model.addAttribute("topicTagId", topicTagId);
+        return "/view/tagTopicList";
+    }
 
     /**
      * 获取标签对应的文章列表
@@ -398,6 +454,50 @@ public class ViewController {
         model.addAttribute("articleTagId", articleTagId);
         return "/view/tagArticleList";
 
+    }
+
+    /**
+     * 话题
+     *
+     * @param topicId
+     * @return
+     */
+    @GetMapping("/topic")
+    public String topicView(HttpServletRequest request, String topicId, Model model) {
+        HttpSession session = request.getSession();
+
+        TopicVo topicVo = topicService.getTopic(topicId);
+        if (Objects.isNull(topicVo)) {
+            return "redirect:/";
+        }
+
+        Topic topic = topicService.getOne(Wrappers.<Topic>lambdaQuery().eq(Topic::getTopicId, topicVo.getTopicId()).select(Topic::getTopicId, Topic::getTopicLookNumber), false);
+        //添加查看次数
+        Integer topicLookNumber = topic.getTopicLookNumber();
+        if (Objects.isNull(topicLookNumber) || topicLookNumber < 0) {
+            topicLookNumber = 0;
+        }
+        ++topicLookNumber;
+        topic.setTopicLookNumber(topicLookNumber);
+        topicService.updateById(topic);
+
+
+        //隐藏作者用户名
+        String userName = topicVo.getUserName();
+        if (StrUtil.isNotBlank(userName)) {
+            topicVo.setUserName(CommonUtils.getHideMiddleStr(userName));
+        }
+
+        //文章
+        model.addAttribute("topic", topicVo);
+
+        //文章类型
+        if (Objects.nonNull(topicVo) && StrUtil.isNotBlank(topicVo.getTopicTypeId())) {
+            TopicType topicType = topicTypeService.getOne(Wrappers.<TopicType>lambdaQuery().eq(TopicType::getTopicTypeId, topicVo.getTopicTypeId()).select(TopicType::getTopicTypeName, TopicType::getTopicTypeId), false);
+            model.addAttribute("topicType", topicType);
+        }
+
+        return "/view/topic";
     }
 
     /**
@@ -442,6 +542,42 @@ public class ViewController {
         }
 
         return "/view/article";
+    }
+
+    /**
+     * 获取话题评论列表
+     *
+     * @param topicId
+     * @param pageNumber
+     * @return
+     */
+    @PostMapping("/commentT/list")
+    @ResponseBody
+    public CommonResult commentTList(HttpServletRequest request, String topicId, Integer pageNumber) {
+        if (StrUtil.isBlank(topicId)) {
+            return CommonResult.failed("程序出现错误，请刷新页面重试");
+        }
+        if (Objects.isNull(pageNumber) || pageNumber < 1) {
+            pageNumber = 1;
+        }
+        Page<CommentTVo> commentTVoPage = new Page<>(pageNumber, 5);
+        IPage<CommentTVo> commentTVoIPage = commentTService.getTopicCommentTList(commentTVoPage, topicId);
+        commentTVoIPage.getRecords().stream().forEach(commentTVo -> {
+            commentTVo.setUserName(CommonUtils.getHideMiddleStr(commentTVo.getUserName()));
+        });
+
+        //已经点过赞的评论
+        HashMap<String, Long> goodCommentTMap = (HashMap<String, Long>) request.getSession().getAttribute("goodCommentTMap");
+        if (CollUtil.isNotEmpty(goodCommentTMap)) {
+            List<String> commentTIds = goodCommentTMap.keySet().stream().collect(Collectors.toList());
+            commentTVoIPage.getRecords().stream().forEach(commentTVo -> {
+                if (commentTIds.contains(commentTVo.getCommentTId())) {
+                    commentTVo.setIsGoodCommentT(1);
+                }
+            });
+        }
+
+        return CommonResult.success(CommonPage.restPage(commentTVoIPage));
     }
 
     /**
@@ -501,6 +637,32 @@ public class ViewController {
         return "/view/donation";
     }
 
+    /**
+     * 话题点赞
+     *
+     * @param request
+     * @param topicId
+     * @return
+     */
+    @PostMapping("/topicGood")
+    @ResponseBody
+    public CommonResult topicGood(HttpServletRequest request, String topicId) {
+        HttpSession session = request.getSession();
+        if (Objects.nonNull(session.getAttribute("topicGoodTime"))) {
+            return CommonResult.failed("客官！您已经点过啦");
+        }
+
+        Topic topic = topicService.getById(topicId);
+        Integer topicGoodNumber = topic.getTopicGoodNumber();
+        ++topicGoodNumber;
+        topic.setTopicGoodNumber(topicGoodNumber);
+        if (topicService.updateById(topic)) {
+            session.setAttribute("topicGoodTime", true);
+            return CommonResult.success("点赞成功！");
+        }
+
+        return CommonResult.failed("点赞失败");
+    }
 
     /**
      * 文章点赞
@@ -529,6 +691,22 @@ public class ViewController {
         return CommonResult.failed("点赞失败");
     }
 
+    /**
+     * 收藏话题
+     *
+     * @param request
+     * @param topicId
+     * @return
+     */
+    @PostMapping("/topicCollection")
+    @ResponseBody
+    public CommonResult topicCollection(HttpServletRequest request, String topicId) {
+        User user = (User) request.getSession().getAttribute("user");
+        if (Objects.isNull(user)) {
+            return CommonResult.failed("客官！您还没有登录呢");
+        }
+        return topicService.topicCollection(user, topicId);
+    }
 
     /**
      * 收藏文章
@@ -545,6 +723,76 @@ public class ViewController {
             return CommonResult.failed("客官！您还没有登录呢");
         }
         return articleService.articleCollection(user, articleId);
+    }
+
+    /**
+     * 搜索话题
+     *
+     * @param request
+     * @param topicTitle
+     * @return
+     */
+    @GetMapping("/topic/search")
+    public String topicSearch(HttpServletRequest request, Integer pageNumber, String topicTitle, Model model) {
+        if (StrUtil.isBlank(topicTitle)) {
+            return "/";
+        }
+        topicTitle = topicTitle.trim();
+        model.addAttribute("topicTitle", topicTitle);
+        if (Objects.isNull(pageNumber) || pageNumber < 1) {
+            pageNumber = 1;
+        }
+        String ipAddr = CommonUtils.getIpAddr(request);
+        ServletContext servletContext = request.getServletContext();
+        ConcurrentMap<String, Long> topicSearchMap = (ConcurrentMap<String, Long>) servletContext.getAttribute("topicSearchMap");
+        if (CollUtil.isEmpty(topicSearchMap) || Objects.isNull(topicSearchMap.get(ipAddr))) {
+            topicSearchMap = new ConcurrentHashMap<>();
+            topicSearchMap.put(ipAddr, DateUtil.currentSeconds());
+        } else {
+            if ((topicSearchMap.get(ipAddr) + 1 > DateUtil.currentSeconds())) {
+                return "/view/searchErrors";
+            }
+        }
+        //查询到的文章列表
+        List<Topic> topicList = new ArrayList<>();
+
+        //拆分搜索词,查询标签
+        List<Word> words = WordSegmenter.seg(topicTitle);
+        List<String> titleList = words.stream().map(Word::getText).collect(Collectors.toList());
+        titleList.add(topicTitle);
+        List<String> topicTagIdList = topicTagService.list(Wrappers.<TopicTag>lambdaQuery()
+                .in(TopicTag::getTopicTagName, titleList)
+                .select(TopicTag::getTopicTagId)).stream().map(TopicTag::getTopicTagId).collect(Collectors.toList());
+        List<String> topicIdList = new ArrayList<>();
+        if (CollUtil.isNotEmpty(topicTagIdList)) {
+            topicIdList = topicTagListService.list(Wrappers.<TopicTagList>lambdaQuery()
+                            .in(TopicTagList::getTopicTagId, topicTagIdList)
+                            .select(TopicTagList::getTopicId)).stream()
+                    .map(TopicTagList::getTopicId).collect(Collectors.toList());
+
+        }
+
+        //分页查询
+        IPage<Topic> topicPage = new Page<>(pageNumber, 12);
+        LambdaQueryWrapper<Topic> queryWrapper = Wrappers.<Topic>lambdaQuery()
+                .like(Topic::getTopicTitle, topicTitle)
+                .select(Topic::getTopicId,
+                        Topic::getTopicCollectionNumber,
+                        Topic::getTopicLookNumber,
+                        Topic::getTopicAddTime,
+                        Topic::getTopicTitle);
+        if (CollUtil.isNotEmpty(topicIdList)) {
+            queryWrapper.or().in(Topic::getTopicId, topicIdList);
+        }
+
+        IPage<Topic> topicIPage = topicService.page(topicPage, queryWrapper);
+        model.addAttribute("topicIPage", CommonPage.restPage(topicIPage));
+
+        //保持搜索时间
+        topicSearchMap.put(ipAddr, DateUtil.currentSeconds());
+        servletContext.setAttribute("topicSearchMap", topicSearchMap);
+
+        return "/view/topicSearch";
     }
 
     /**
@@ -616,6 +864,49 @@ public class ViewController {
         servletContext.setAttribute("articleSearchMap", articleSearchMap);
 
         return "/view/articleSearch";
+    }
+
+    /**
+     * 给话题点赞
+     *
+     * @param commentTId
+     * @return
+     */
+    @PostMapping("/goodCommentT")
+    @ResponseBody
+    public CommonResult goodCommentT(HttpServletRequest request, String commentTId) {
+        HttpSession session = request.getSession();
+
+
+        if (StrUtil.isBlank(commentTId)) {
+            return CommonResult.failed("未获取到需要的数据，请刷新页面重试");
+        }
+
+        //一个小时只能给一个评论点赞
+        HashMap<String, Long> goodCommentTMap = (HashMap<String, Long>) session.getAttribute("goodCommentTMap");
+        if (CollUtil.isEmpty(goodCommentTMap)) {
+            goodCommentTMap = new HashMap<>();
+        } else {
+            if (Objects.nonNull(goodCommentTMap.get(commentTId))) {
+                Long goodCommentTTime = goodCommentTMap.get(commentTId);
+                if ((goodCommentTTime + 3600) >= DateUtil.currentSeconds()) {
+                    return CommonResult.failed("客官，这个评论您已经点过赞了哦");
+                }
+            }
+        }
+
+        CommentT commentT = commentTService.getById(commentTId);
+        if (Objects.isNull(commentT)) {
+            return CommonResult.failed("点赞失败，未获取到需要的数据，请刷新页面重试");
+        }
+        Integer commentTGoodNumber = commentT.getCommentTGoodNumber();
+        ++commentTGoodNumber;
+        if (commentTService.updateById(commentT.setCommentTGoodNumber(commentTGoodNumber))) {
+            goodCommentTMap.put(commentTId, DateUtil.currentSeconds());
+            session.setAttribute("goodCommentTMap", goodCommentTMap);
+            return CommonResult.success("点赞成功");
+        }
+        return CommonResult.failed("点赞失败");
     }
 
     /**

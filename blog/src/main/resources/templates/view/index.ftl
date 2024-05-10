@@ -106,6 +106,35 @@
                 </div>
             </#list>
         </#if>
+
+        <h4 style="margin-top: 0px;"><i class="icon icon-time"></i>最新话题</h4>
+        <#if indexTopicList?? && indexTopicList?size gt 0>
+            <#list indexTopicList as indexTopic>
+                <div class="col-xs-6 col-sm-3" style="padding: 2px">
+                    <div class = "card container-fluid my-navbar3">
+                        <a href = "/topic?topicId=${(indexTopic.topicId)!}" style = "text-decoration:none">
+                            <div class = "card-heading"><strong>${(indexTopic.topicTitle)!}</strong></div>
+                            <div class = "card-content text-muted">
+                                <i class = "icon icon-time"></i>
+                                ${(indexTopic.topicAddTime)!}
+                            </div>
+
+                            <div class = "card-actions">
+                                    <span class = "label label-info">
+                                        <i class = "icon-eye-open"></i> ${(indexTopic.topicLookNumber)!}
+                                    </span> |
+                                <span class = "label label-success">
+                                        <i class = "icon-thumbs-up"></i> ${(indexTopic.topicGoodNumber)!}
+                                    </span> |
+                                <span class = "label label-primary">
+                                        <i class = "icon-star"></i> ${(indexTopic.topicCollectionNumber)!}
+                                    </span>
+                            </div>
+                        </a>
+                    </div>
+                </div>
+            </#list>
+        </#if>
     </div>
 
     <div class="col-xs-12  col-sm-3 col2Padding ">

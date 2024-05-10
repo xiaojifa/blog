@@ -8,12 +8,15 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hzy.blog.dto.article.PublishArticleActionDto;
+import com.hzy.blog.dto.topic.PublishTopicActionDto;
 import com.hzy.blog.entity.*;
 import com.hzy.blog.service.*;
 import com.hzy.blog.utils.CommonPage;
 import com.hzy.blog.utils.CommonResult;
 import com.hzy.blog.vo.ArticleVo;
+import com.hzy.blog.vo.CommentTVo;
 import com.hzy.blog.vo.CommentVo;
+import com.hzy.blog.vo.TopicVo;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -57,9 +60,23 @@ public class UserController {
     @Resource
     private ICommentService commentService;
     @Resource
+    private ICommentTService commentTService;
+    @Resource
     private IUserService userService;
     @Resource
     private ICommentReplyService commentReplyService;
+    @Resource
+    private ICommentTReplyService commentTReplyService;
+    @Resource
+    private IUserCollectionTopicService userCollectionTopicService;
+    @Resource
+    private ITopicService topicService;
+    @Resource
+    private ITopicTypeService topicTypeService;
+    @Resource
+    private ITopicTagService topicTagService;
+    @Resource
+    private ITopicTagListService topicTagListService;
 
     /**
      * 文件上传
@@ -92,9 +109,53 @@ public class UserController {
         return "/user/userManager";
     }
 
+    /**
+     * 用户收藏话题
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/collectionTopic/list")
+    public String collectionTopicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        User user = (User) request.getSession().getAttribute("user");
+        Page<Topic> topicPage = new Page<>(pageNumber, 24);
+        List<String> topicIdList = userCollectionTopicService.list(Wrappers.<UserCollectionTopic>lambdaQuery()
+                        .eq(UserCollectionTopic::getUserId, user.getUserId())
+                        .select(UserCollectionTopic::getTopicId)).stream()
+                .map(UserCollectionTopic::getTopicId)
+                .collect(Collectors.toList());
+        if (CollUtil.isNotEmpty(topicIdList)) {
+            LambdaQueryWrapper<Topic> wrapper = Wrappers.<Topic>lambdaQuery()
+                    .in(Topic::getTopicId, topicIdList)
+                    .select(Topic::getTopicId,
+                            Topic::getTopicAddTime,
+                            Topic::getTopicCollectionNumber,
+                            Topic::getTopicGoodNumber,
+                            Topic::getTopicLookNumber,
+                            Topic::getTopicTitle);
+            IPage<Topic> topicIPage = topicService.page(topicPage, wrapper);
+            model.addAttribute("topicIPage", CommonPage.restPage(topicIPage));
+        }
+        return "/user/collectionList";
+    }
 
     /**
      * 用户收藏
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/topic/list")
+    public String topicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        User user = (User) request.getSession().getAttribute("user");
+        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
+        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, null);
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+        return "/user/topicList";
+    }
+
+    /**
+     * 用户收藏文章
      *
      * @param pageNumber
      * @return
@@ -124,8 +185,6 @@ public class UserController {
             IPage<Article> articleIPage = articleService.page(articlePage, wrapper);
             model.addAttribute("articleIPage", CommonPage.restPage(articleIPage));
         }
-
-
         return "/user/collectionList";
     }
 
@@ -142,6 +201,110 @@ public class UserController {
         IPage<ArticleVo> articleVoIPage = articleService.articleList(articlePage, null, null);
         model.addAttribute("articleVoIPage", CommonPage.restPage(articleVoIPage));
         return "/user/articleList";
+    }
+
+    /**
+     * 发布话题
+     *
+     * @return
+     */
+    @GetMapping("/publishTopic")
+    public String releaseTopic(HttpServletRequest request, Model model, String topicId) {
+        User user = (User) request.getSession().getAttribute("user");
+        if (Objects.isNull(user) || Objects.isNull(user.getUserPublishTopic()) || user.getUserPublishTopic() != 1) {
+            return "redirect:/";
+        }
+
+        Topic topic = topicService.getOne(Wrappers.<Topic>lambdaQuery().eq(Topic::getUserId, user.getUserId()).eq(Topic::getTopicId, topicId));
+        if (Objects.nonNull(topic)) {
+            model.addAttribute("topic", topic);
+
+            //获取文章标签
+            List<TopicTagList> topicTagLists = topicTagListService.list(Wrappers.<TopicTagList>lambdaQuery()
+                    .eq(TopicTagList::getTopicId, topic.getTopicId())
+                    .select(TopicTagList::getTopicTagId));
+
+            if (CollUtil.isNotEmpty(topicTagLists)) {
+                List<String> topicTagIdList = topicTagLists.stream().map(TopicTagList::getTopicTagId).collect(Collectors.toList());
+                model.addAttribute("topicTagIdList", topicTagIdList);
+            }
+            //获取该文章类型的同级类型
+            String topicTypeId = topic.getTopicTypeId();
+            List<TopicType> topicSameTypeList = topicTypeService.list(Wrappers.<TopicType>lambdaQuery().eq(TopicType::getTopicTypeParentId, topicTypeService.getById(topicTypeId).getTopicTypeParentId()));
+            model.addAttribute("topicSameTypeList", topicSameTypeList);
+
+            //获取该文章上级类型
+            model.addAttribute("topicTypeParentId", topicTypeService.getById(topic.getTopicTypeId()).getTopicTypeParentId());
+        }
+
+        //获取类型
+        List<TopicType> topicType0List = topicTypeService.list(Wrappers.<TopicType>lambdaQuery().isNull(TopicType::getTopicTypeParentId).or().eq(TopicType::getTopicTypeParentId, "").orderByAsc(TopicType::getTopicTypeSort));
+        model.addAttribute("topicType0List", topicType0List);
+
+        //获取标签
+        List<TopicTag> topicTagList = topicTagService.list();
+        model.addAttribute("topicTagList", topicTagList);
+
+        return "/user/publishTopic";
+    }
+
+    /**
+     * 获取二级话题分类
+     *
+     * @param topicTypeId
+     * @return
+     */
+    @PostMapping("/getTopicTypeChild")
+    @ResponseBody
+    public CommonResult getTopicTypeChild(String topicTypeId) {
+        if (StrUtil.isBlank(topicTypeId)) {
+            return CommonResult.failed("请选择一级分类");
+        }
+
+        List<TopicType> topicTypeList = topicTypeService.list(Wrappers.<TopicType>lambdaQuery()
+                .eq(TopicType::getTopicTypeParentId, topicTypeId)
+                .select(TopicType::getTopicTypeId, TopicType::getTopicTypeName));
+
+        return CommonResult.success(topicTypeList);
+    }
+
+    /**
+     * 发布话题方法
+     *
+     * @param publishTopicActionDto
+     * @return
+     */
+    @PostMapping("/publishTopicAction")
+    @ResponseBody
+    public CommonResult publishTopicAction(HttpServletRequest request, @Valid PublishTopicActionDto publishTopicActionDto, MultipartFile topicCoverFile) throws IOException {
+        HttpSession session = request.getSession();
+        User user = (User) session.getAttribute("user");
+        if (Objects.isNull(user)){
+            return CommonResult.failed("登录过期，请重新登录");
+        }
+        User serviceById = userService.getById(user.getUserId());
+        if(Objects.isNull(serviceById)){
+            session.setAttribute("user",serviceById);
+        }
+        if (Objects.isNull(serviceById.getUserPublishTopic()) || serviceById.getUserPublishTopic() != 1) {
+            return CommonResult.failed("当前您还没有权限发布，请联系管理员");
+        }
+        if (Objects.nonNull(topicCoverFile)) {
+            //判断是否上传的图片，是否是我们指定的像素
+            BufferedImage read = ImageIO.read(topicCoverFile.getInputStream());
+            if (Objects.isNull(read)) {
+                return CommonResult.failed("请上传图片文件");
+            }
+            int width = read.getWidth();
+            int height = read.getHeight();
+            if (width != 250 || height != 170) {
+                return CommonResult.failed("图片的像素为 250px * 170px");
+            }
+
+
+            publishTopicActionDto.setTopicCoverUrl(uploadFileListService.getUploadFileUrl(topicCoverFile));
+        }
+        return topicService.publishTopicAction(request, publishTopicActionDto);
     }
 
 
@@ -251,6 +414,26 @@ public class UserController {
     }
 
     /**
+     * 个人中心，我的话题
+     *
+     * @param pageNumber
+     * @param model
+     * @return
+     */
+    @GetMapping("/myTopicList")
+    public String myTopicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        User user = (User) request.getSession().getAttribute("user");
+        if (Objects.isNull(pageNumber) || pageNumber < 1) {
+            pageNumber = 1;
+        }
+        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
+        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, user.getUserId());
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+
+        return "/user/myTopicList";
+    }
+
+    /**
      * 个人中心，我的文章
      *
      * @param pageNumber
@@ -271,6 +454,18 @@ public class UserController {
     }
 
     /**
+     * 删除话题
+     *
+     * @param topicId
+     * @return
+     */
+    @PostMapping("/delTopic")
+    @ResponseBody
+    public CommonResult delTopic(String topicId) {
+        return topicService.delTopic(topicId);
+    }
+
+    /**
      * 删除文章
      *
      * @param articleId
@@ -282,6 +477,48 @@ public class UserController {
         return articleService.delArticle(articleId);
     }
 
+    /**
+     * 用户评论话题
+     *
+     * @param request
+     * @param topicId
+     * @param commentTContent
+     * @return
+     */
+    @PostMapping("/saveCommentT")
+    @ResponseBody
+    public CommonResult userSaveCommentT(HttpServletRequest request, String topicId, String commentTContent,String commentTId) {
+        if (StrUtil.isBlank(topicId) || StrUtil.isBlank(commentTContent)) {
+            return CommonResult.failed("评论失败，请刷新页面重试");
+        }
+        if (commentTContent.isEmpty() || commentTContent.length() > 800) {
+            return CommonResult.failed("评论内容在1-800个字符之间！");
+        }
+
+        User user = (User) request.getSession().getAttribute("user");
+        if (Objects.isNull(user)) {
+            return CommonResult.failed("客官！您的登录过期，请从新登录哦");
+        }
+        String userId = user.getUserId();
+
+        CommentT commentT1 = new CommentT();
+        commentT1.setTopicId(topicId);
+        commentT1.setUserId(userId);
+        commentT1.setCommentTContent(commentTContent);
+        commentT1.setCommentTTime(LocalDateTime.now());
+        commentT1.setCommentTGoodNumber(0);
+
+        if (commentTService.save(commentT1)) {
+            CommentTVo commentTVo = new CommentTVo();
+            BeanUtils.copyProperties(commentT1, commentTVo);
+            commentTVo.setUserName(
+                    userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserId, commentTVo.getUserId()).select(User::getUserName)).getUserName()
+            );
+            commentTVo.setCommentTTime(DateUtil.format(commentT1.getCommentTTime(),"yyyy-MM-dd HH:mm:ss"));
+            return CommonResult.success(commentTVo);
+        }
+        return CommonResult.failed("评论失败");
+    }
 
     /**
      * 用户评论

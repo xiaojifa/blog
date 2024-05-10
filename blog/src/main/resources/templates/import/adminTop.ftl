@@ -1,5 +1,5 @@
 <#include "./tops.ftl">
-<div class="container my-navbar2">
+<div class="my-navbar2">
     <nav class="navbar navbar-default" role="navigation">
         <div class="container-fluid my-navbar1">
             <!-- 导航头部 -->

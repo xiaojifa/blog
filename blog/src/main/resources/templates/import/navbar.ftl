@@ -48,7 +48,6 @@
                         </div>
                         <button type="submit" class="btn btn-default"><i class="icon-search"></i> 搜索</button>
                     </form>
-
                 </ul>
                 <ul class="nav navbar-nav navbar-right">
                     <#if user??>
@@ -57,6 +56,11 @@
                         <li>
                         <#if (user.userPublishArticle)?? && (user.userPublishArticle) == 1>
                             <li><a href="/user/publishArticle"><i class="icon-edit"></i> 发布文章</a></li>
+                        </#if>
+                        <li>
+                        <li>
+                        <#if (user.userPublishTopic)?? && (user.userPublishTopic) == 1>
+                            <li><a href="/user/publishTopic"><i class="icon-edit"></i> 发布话题</a></li>
                         </#if>
                         <li>
                             <a href="/logout"><i class="icon-signout"></i> 退出登录</a>

@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.hzy.blog.mapper.CommentTMapper">
+    <select id="getTopicCommentTList" resultType="com.hzy.blog.vo.CommentTVo">
+        SELECT
+        com.*,
+        u.user_name
+        FROM
+        `comment_t` com
+        LEFT JOIN `user` u ON com.user_id = u.user_id
 
+        <where>
+            <if test="topicId != null and topicId != '' ">
+                com.topic_id = #{topicId}
+            </if>
+        </where>
+    </select>
 </mapper>
