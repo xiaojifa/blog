@@ -4,7 +4,7 @@
         <meta charset="UTF-8">
         <meta http-equiv="X-UA-Compatible" content="IE=edge">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <title>NSDA论坛</title>
+        <title>NSDA</title>
         <meta name="referrer" content="always">
         <meta name="apple-mobile-web-app-title" content="NSDA - 记录生活和工作"/>
         <meta name="keywords" content="NSDA 后端技术 前端技术 生活 学习 娱乐 游戏">
