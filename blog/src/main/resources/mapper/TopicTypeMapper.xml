@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hzy.blog.mapper.TopicTypeMapper">
+    <select id="topicTypeList" resultType="com.hzy.blog.vo.TopicTypeVo">
+        SELECT tty.*,
+               (SELECT count(1) FROM topic a WHERE a.topic_type_id = tty.topic_type_id) AS topicCount
+        FROM topic_type tty
+        order by tty.topic_type_sort
+    </select>
+
+    <select id="getIndexTopicTypeList" resultType="com.hzy.blog.vo.TopicTypeTreeVo">
+        SELECT
+        tty.topic_type_id,
+        tty.topic_type_name
+        FROM
+        topic_type tty
+        WHERE 1=1
+        <choose>
+            <when test="topicTypeParentId != null and topicTypeParentId != ''">
+                and tty.topic_type_parent_id = #{topicTypeParentId}
+            </when>
+            <otherwise>
+                and tty.topic_type_parent_id = NULL
+                OR tty.topic_type_parent_id = ''
+            </otherwise>
+        </choose>
+        ORDER BY
+        tty.topic_type_sort
+
+    </select>
+</mapper>

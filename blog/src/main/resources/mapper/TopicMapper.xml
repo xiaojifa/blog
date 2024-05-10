@@ -1,0 +1,109 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.hzy.blog.mapper.TopicMapper">
+    <sql id="topicVoInfoSql">
+        SELECT trt.topic_id,
+               trt.topic_type_id,
+               trt.topic_hot,
+               u.user_id,
+               u.user_name,
+               trt.topic_title,
+               trt.topic_add_time,
+               trt.topic_good_number,
+               trt.topic_look_number,
+               trt.topic_collection_number,
+               trtt.topic_type_name
+        FROM topic trt
+                 LEFT JOIN topic_type AS trtt ON trt.topic_type_id = trtt.topic_type_id
+                 LEFT JOIN user u on u.user_id = trt.user_id
+    </sql>
+
+    <select id="topicList" resultType="com.hzy.blog.vo.TopicVo">
+        <include refid="topicVoInfoSql"></include>
+        <where>
+            <if test="topicTitle != null and topicTitle != ''">
+                and trt.topic_title like concat ('%',#{topicTitle},'%')
+            </if>
+            <if test="userId != null and userId != ''">
+                and trt.user_id = #{userId}
+            </if>
+        </where>
+        ORDER BY trt.topic_add_time desc
+    </select>
+
+    <select id="topicListView" resultType="com.hzy.blog.vo.TopicVo">
+        <include refid="topicVoInfoSql"></include>
+
+        <where>
+            <if test="topicTitle != null and topicTitle != ''">
+                and trt.topic_title like concat ('%',#{topicTitle},'%')
+            </if>
+            <if test="topicTypeId != null and topicTypeId != ''">
+                and trt.topic_type_id = #{topicTypeId}
+            </if>
+        </where>
+        ORDER BY trt.topic_add_time desc
+    </select>
+
+    <select id="getIndexTopicList" resultType="com.hzy.blog.vo.TopicVo">
+        SELECT trt.topic_id,
+               trt.topic_type_id,
+               trt.topic_title,
+               trt.topic_add_time,
+               trt.topic_good_number,
+               trt.topic_look_number,
+               trt.topic_collection_number,
+               trtt.topic_type_name
+        FROM topic trt
+                 LEFT JOIN topic_type AS trtt ON trt.topic_type_id = trtt.topic_type_id
+        ORDER BY trt.topic_add_time desc LIMIT 20
+    </select>
+
+
+    <select id="getTopic" resultType="com.hzy.blog.vo.TopicVo">
+        SELECT
+        trt.topic_id,
+        trt.topic_type_id,
+        trt.topic_context,
+        u.user_id,
+        u.user_name,
+        trt.topic_title,
+        trt.topic_add_time,
+        trt.topic_good_number,
+        trt.topic_look_number,
+        trt.topic_collection_number,
+        trtt.topic_type_name
+        FROM
+        topic trt
+        LEFT JOIN topic_type AS trtt ON trt.topic_type_id = trtt.topic_type_id
+        LEFT JOIN user u on u.user_id = trt.user_id
+        <where>
+            <if test="topicId != null and topicId != ''">
+                and trt.topic_id = #{topicId}
+            </if>
+        </where>
+    </select>
+
+    <select id="tagTopicList" resultType="com.hzy.blog.vo.TopicVo">
+        SELECT
+        atl.topic_id,
+        trt.topic_type_id,
+        trt.topic_title,
+        trt.topic_add_time,
+        trt.topic_good_number,
+        trt.topic_look_number,
+        trt.topic_collection_number
+
+        FROM
+        topic_tag_list atl
+        LEFT JOIN topic trt ON atl.topic_id = trt.topic_id
+
+        <where>
+            not ISNULL(trt.topic_title)
+            <if test="topicTagId != null and topicTagId != '' ">
+                and atl.topic_tag_id = #{topicTagId}
+            </if>
+        </where>
+
+    </select>
+</mapper>
