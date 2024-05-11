@@ -4,16 +4,18 @@
     <select id="articleTypeList" resultType="com.hzy.blog.vo.ArticleTypeVo">
         SELECT aty.*,
                (SELECT count(1) FROM article a WHERE a.article_type_id = aty.article_type_id) AS articleCount
-        FROM article_type aty
-        order by aty.article_type_sort
+        FROM
+            article_type aty
+        order by
+            aty.article_type_sort
     </select>
 
     <select id="getIndexArticleTypeList" resultType="com.hzy.blog.vo.ArticleTypeTreeVo">
         SELECT
-        aty.article_type_id,
-        aty.article_type_name
+            aty.article_type_id,
+            aty.article_type_name
         FROM
-        article_type aty
+            article_type aty
         WHERE 1=1
         <choose>
             <when test="articleTypeParentId != null and articleTypeParentId != ''">

@@ -50,6 +50,11 @@ public class User implements Serializable {
     private Integer userPublishTopic;
 
     /**
+     * 是否是VIP
+     */
+    private Integer userVip;
+
+    /**
      * 是否冻结
      */
     private Integer userFrozen;

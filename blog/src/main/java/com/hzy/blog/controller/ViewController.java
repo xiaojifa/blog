@@ -21,6 +21,9 @@ import com.hzy.blog.utils.CommonPage;
 import com.hzy.blog.utils.CommonResult;
 import com.hzy.blog.utils.CommonUtils;
 import org.springframework.beans.BeanUtils;
+import org.springframework.messaging.Message;
+import org.springframework.messaging.handler.annotation.MessageMapping;
+import org.springframework.messaging.handler.annotation.SendTo;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -95,6 +98,18 @@ public class ViewController {
         servletContext.removeAttribute("adIndexList");
         servletContext.removeAttribute("linkList");
         return "redirect:/";
+    }
+
+    /**
+     * 聊天
+     *
+     * @param message
+     * @return
+     */
+    @MessageMapping("/chat")
+    @SendTo("/topic/messages")
+    public Message sendMessage(Message message) {
+        return message;
     }
 
     /**
@@ -254,18 +269,6 @@ public class ViewController {
                 }
             }
             servletContext.setAttribute("articleTypeList", articleTypeList);
-        }
-
-        // 查询获取首页话题类型树形目录
-        List<TopicTypeTreeVo> topicTypeList = (List<TopicTypeTreeVo>) servletContext.getAttribute("topicTypeList");
-        if (CollUtil.isEmpty(topicTypeList)) {
-            topicTypeList = topicTypeService.getIndexTopicTypeList(null);
-            if (CollUtil.isNotEmpty(topicTypeList)) {
-                for (TopicTypeTreeVo topicTypeTreeVo : topicTypeList) {
-                    topicTypeTreeVo.setTopicTypeTreeVoList(topicTypeService.getIndexTopicTypeList(topicTypeTreeVo.getTopicTypeId()));
-                }
-            }
-            servletContext.setAttribute("topicTypeList", topicTypeList);
         }
 
         // 热门话题

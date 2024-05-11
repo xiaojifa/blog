@@ -42,5 +42,10 @@ public class UserDto {
      */
     private Integer userPublishTopic;
 
+    /**
+     * 是否是VIP
+     */
+    private Integer userVip;
+
 
 }

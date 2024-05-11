@@ -1,6 +1,6 @@
 <#include "./tops.ftl">
 <div class="my-navbar2">
-    <nav class="navbar navbar-default" role="navigation">
+    <nav class="navbar navbar-inverse" role="navigation">
         <div class="container-fluid my-navbar1">
             <!-- 导航头部 -->
             <div class="navbar-header">
@@ -87,7 +87,6 @@
         </div>
     </div>
     <script>
-
 
         function updatePassword() {
             $.post("/hzy2003/password/update", {

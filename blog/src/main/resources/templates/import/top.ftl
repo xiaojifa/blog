@@ -26,7 +26,35 @@
         <script src="https://cdn.jsdelivr.net/npm/tsparticles/tsparticles.bundle.min.js"></script>
         <!-- then include jquery wrapper -->
         <script src="https://cdn.jsdelivr.net/npm/@tsparticles/jquery"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/sockjs-client/1.1.2/sockjs.min.js"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/stomp.js/2.3.3/stomp.min.js"></script>
+        <script>
+            var stompClient = null;
 
+            function connect() {
+                var socket = new SockJS('/chat');
+                stompClient = Stomp.over(socket);
+                stompClient.connect({}, function (frame) {
+                    console.log('Connected: ' + frame);
+                    stompClient.subscribe('/topic/messages', function (message) {
+                        showMessage(JSON.parse(message.body).content);
+                    });
+                });
+            }
+
+            function sendMessage() {
+                var messageContent = document.getElementById('message').value;
+                stompClient.send("/app/chat", {}, JSON.stringify({'content': messageContent}));
+                document.getElementById('message').value = '';
+            }
+
+            function showMessage(message) {
+                var messageArea = document.getElementById('messages');
+                var messageElement = document.createElement('p');
+                messageElement.textContent = message;
+                messageArea.appendChild(messageElement);
+            }
+        </script>
     </head>
     <body style="background-color: #F5F5F5;">
         <script src="/js/particles.min.js"></script>

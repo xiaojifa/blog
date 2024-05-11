@@ -30,6 +30,7 @@
                     <th>状态</th>
                     <th>发布文章</th>
                     <th>发布话题</th>
+                    <th>VIP</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -60,7 +61,14 @@
                             </#if>
                         </td>
                         <td>
-                            <button onclick="userUpdate('${(user.userId)!}', '${(user.userName)!}', '${(user.userFrozen)!}', '${(user.userPublishArticle)!}','${(user.userPublishTopic)!}')"
+                            <#if (user.userVip)?? && (user.userVip) == 1>
+                                <span class="label label-success">VIP用户</span>
+                            <#else >
+                                <span class="label label-danger">普通用户</span>
+                            </#if>
+                        </td>
+                        <td>
+                            <button onclick="userUpdate('${(user.userId)!}', '${(user.userName)!}', '${(user.userFrozen)!}', '${(user.userPublishArticle)!}', '${(user.userPublishTopic)!}', '${(user.userVip)!}')"
                                     type="button" class="btn btn-mini"><i class="icon icon-cog"></i> 修改
                             </button>
                             <button onclick="delUser('${user.userId}')"
@@ -181,6 +189,17 @@
                             </label>
                         </div>
                     </div>
+                    <div class="form-group">
+                        <label for="userVip">VIP</label>
+                        <div class="input-group">
+                            <label class="radio-inline">
+                                <input type="radio" name="userVip" value="1"> 是
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="userVip" value="0" checked="checked"> 不是
+                            </label>
+                        </div>
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
@@ -201,6 +220,7 @@
         let userFrozen = $("input[name='userFrozen']:checked").val();
         let userPublishArticle = $("input[name='userPublishArticle']:checked").val();
         let userPublishTopic = $("input[name='userPublishTopic']:checked").val();
+        let userVip = $("input[name='userVip']:checked").val();
 
         if (!checkNotNull(userId)) {
             zuiMsg("程序出错，刷新重试");
@@ -218,12 +238,17 @@
             zuiMsg("请选择是否运行发布文章");
             return;
         }
+        if (!checkNotNull(userVip)) {
+            zuiMsg("请选择是否运行发布文章");
+            return;
+        }
         $.post("/hzy2003/user/update", {
                 userId: userId,
                 userPassword: userPassword,
                 userFrozen: userFrozen,
                 userPublishArticle: userPublishArticle,
-                userPublishTopic: userPublishTopic
+                userPublishTopic: userPublishTopic,
+                userVip: userVip
             },
             function (data) {
                 if (data.code === 200) {
@@ -234,13 +259,14 @@
             });
     }
 
-    function userUpdate(userId, userName, userFrozen, userPublishArticle, userPublishTopic) {
+    function userUpdate(userId, userName, userFrozen, userPublishArticle, userPublishTopic, userVip) {
         $('#userUpdateModal').modal('toggle', 'center');
         $("#userId").val(userId);
         $("#userNameUpdate").val(userName);
         $(":radio[name='userFrozen'][value='" + userFrozen + "']").prop("checked", "checked");
         $(":radio[name='userPublishArticle'][value='" + userPublishArticle + "']").prop("checked", "checked");
         $(":radio[name='userPublishTopic'][value='" + userPublishTopic + "']").prop("checked", "checked");
+        $(":radio[name='userVip'][value='" + userVip + "']").prop("checked", "checked");
     }
 
 
