@@ -75,6 +75,11 @@ public class Article implements Serializable {
     private Integer articleHot;
 
     /**
+     * 是否是VIP文章 0否，1是
+     */
+    private Integer articleVip;
+
+    /**
      * 收藏次数
      */
     private Integer articleCollectionNumber;

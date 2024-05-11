@@ -103,6 +103,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setArticleGoodNumber(0);
         article.setArticleLookNumber(0);
         article.setArticleHot(0);
+        article.setArticleVip(0);
         article.setArticleCollectionNumber(0);
 
         if (!saveOrUpdate(article)) {

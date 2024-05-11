@@ -53,6 +53,11 @@ public class ArticleVo {
     private Integer articleHot;
 
     /**
+     * 是否是VIP文章 0否，1是
+     */
+    private Integer articleVip;
+
+    /**
      * 点赞次数
      */
     private Integer articleGoodNumber;

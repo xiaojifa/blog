@@ -7,6 +7,7 @@
                art.article_type_id,
                art.article_cover_url,
                art.article_hot,
+               art.article_vip,
                u.user_id,
                u.user_name,
                art.article_title,
