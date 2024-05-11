@@ -4,34 +4,6 @@
     <script src="//cdn.bootcdn.net/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/bootstrap-datetimepicker.min.js"></script>
     <script src="//cdn.bootcdn.net/ajax/libs/smalot-bootstrap-datetimepicker/2.4.4/js/locales/bootstrap-datetimepicker.zh-CN.js"></script>
     <div class="col-sm-3 img-thumbnail">
-        <div class="panel col-sm-12">
-            <div class="panel-body">
-                <form class="form-horizontal">
-                    <input type="hidden" id="adTypeId" name="adTypeId">
-                    <div class="form-group">
-                        <label for="adTypeTitle" class="col-sm-5">类型名称</label>
-                        <div class="col-sm-5">
-                            <input type="text" class="form-control" name="adTypeTitle" id="adTypeTitle" placeholder="类型名称">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="adTypeTag" class="col-sm-5">类型标识</label>
-                        <div class="col-sm-5">
-                            <input type="text" class="form-control" name="adTypeTag" id="adTypeTag" placeholder="类型标识">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <label for="adTypeSort" class="col-sm-5">类型排序</label>
-                        <div class="col-sm-5">
-                            <input type="text" class="form-control" name="adTypeSort" id="adTypeSort" placeholder="类型排序">
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <button onclick="subAdTypeUpdate()" type="button" class="btn btn-success">提交</button>
-                    </div>
-                </form>
-            </div>
-        </div>
         <ul class="list-group col-sm-12">
             <#if adTypeList?? && adTypeList?size gt 0>
                 <#list adTypeList as adType>
@@ -54,65 +26,6 @@
     </div>
 
     <div class="col-sm-9">
-    <#--    <div class="panel col-sm-12">-->
-    <#--        <div class="panel-body">-->
-    <#--            <form class="form-horizontal">-->
-    <#--                <input type="hidden" id="adId" name="adId">-->
-    <#--                <div class="form-group">-->
-    <#--                    <label for="adAdTypeId" class="col-sm-2">广告类型：</label>-->
-    <#--                    <div class="col-sm-2">-->
-    <#--                        <select class="form-control" id="adAdTypeId" name="adAdTypeId">-->
-    <#--                            <#if adTypeList?? && adTypeList?size gt 0>-->
-    <#--                                <#list adTypeList as adType>-->
-    <#--                                    <option value="${(adType.adTypeId)!}">${(adType.adTypeTitle)!}</option>-->
-    <#--                                </#list>-->
-    <#--                            </#if>-->
-    <#--                        </select>-->
-    <#--                    </div>-->
-    <#--                    <label for="adTitle" class="col-sm-2">广告标题：</label>-->
-    <#--                    <div class="col-sm-2">-->
-    <#--                        <input type="text" class="form-control" name="adTitle" id="adTitle" placeholder="广告标题">-->
-    <#--                    </div>-->
-    <#--                    <label for="adSort" class="col-sm-2">广告排序：</label>-->
-    <#--                    <div class="col-sm-2">-->
-    <#--                        <input type="number" class="form-control" name="adSort" id="adSort" placeholder="广告排序">-->
-    <#--                    </div>-->
-    <#--                </div>-->
-
-    <#--                <div class="form-group">-->
-    <#--                    <label for="adImgUrlFile" class="col-sm-2">广告图片：</label>-->
-    <#--                    <div class="col-sm-4">-->
-    <#--                        <input type="file" class="form-control" name="adImgUrlFile" id="adImgUrlFile"-->
-    <#--                               placeholder="图片地址">-->
-    <#--                    </div>-->
-    <#--                    <label for="adLinkUrl" class="col-sm-2">跳转连接：</label>-->
-    <#--                    <div class="col-sm-4">-->
-    <#--                        <input type="text" class="form-control" name="adLinkUrl" id="adLinkUrl" placeholder="跳转连接">-->
-    <#--                    </div>-->
-    <#--                </div>-->
-
-    <#--                <div class="form-group">-->
-    <#--                    <label for="adBeginTime" class="col-sm-2">开始时间：</label>-->
-    <#--                    <div class="col-sm-4">-->
-    <#--                        <input type="text" name="adBeginTime" placeholder="开始时间" id="adBeginTime"-->
-    <#--                               class="form-control form-datetime" readonly="readonly">-->
-    <#--                    </div>-->
-    <#--                    <label for="adEndTime" class="col-sm-2">结束时间：</label>-->
-    <#--                    <div class="col-sm-4">-->
-    <#--                        <input type="text" name="adEndTime" id="adEndTime" placeholder="结束时间"-->
-    <#--                               class="form-control form-datetime" readonly="readonly">-->
-    <#--                    </div>-->
-    <#--                </div>-->
-    <#--                <div class="form-group">-->
-    <#--                    <label class="col-sm-2"></label>-->
-    <#--                    <div class="col-sm-4">-->
-    <#--                        <button type="button" onclick="adAddOrUpdate()" class="btn btn-success">提交</button>-->
-    <#--                    </div>-->
-    <#--                </div>-->
-    <#--            </form>-->
-    <#--        </div>-->
-    <#--    </div>-->
-
         <div class="panel col-sm-12">
             <div class="panel-body">
                 <button onclick="adAdd()" type="button" class="btn btn-success">添加</button>
@@ -166,6 +79,34 @@
             </div>
         </div>
     </div>
+
+<div class="modal fade" id="updateAdTypeModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                            class="sr-only">关闭</span></button>
+            </div>
+            <input type="hidden" id="adTypeId" name="adTypeId">
+            <div class="form-group">
+                <label for="adTypeTitle">类型名称</label>
+                <input type="text" class="form-control" name="adTypeTitle" id="adTypeTitle" placeholder="类型名称">
+            </div>
+            <div class="form-group">
+                <label for="adTypeTag">类型标识</label>
+                <input type="text" class="form-control" name="adTypeTag" id="adTypeTag" placeholder="类型标识">
+
+            </div>
+            <div class="form-group">
+                <label for="adTypeSort">类型排序</label>
+                <input type="text" class="form-control" name="adTypeSort" id="adTypeSort" placeholder="类型排序">
+            </div>
+            <div class="form-group">
+                <button onclick="subAdTypeUpdate()" type="button" class="btn btn-success">提交</button>
+            </div>
+        </div>
+    </div>
+</div>
 
     <div class="modal fade" id="updateAdModal">
         <div class="modal-dialog">
@@ -341,6 +282,7 @@
             $("#adTypeTitle").val(adTypeTitle);
             $("#adTypeTag").val(adTypeTag);
             $("#adTypeSort").val(adTypeSort);
+            $('#updateAdTypeModal').modal('toggle', 'center');
         }
 
         function adUpdate(adId, adTypeId, adTitle, adImgUrlFile, adLinkUrl, adSort, adBeginTime, adEndTime) {
