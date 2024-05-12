@@ -103,10 +103,14 @@
                             </div>
                         </div>
                     </#if>
+
                 </form>
             </div>
+
+
         </div>
     </div>
+</div>
 <div class="col-xs-12">
     <div class="panel">
         <div class="panel-body">
@@ -180,8 +184,6 @@
         formData.append("articleTagIds", articleTagIds);
         formData.append("articleContext", articleContext);
         formData.append("articleVip", articleVip); // 将VIP属性值添加到FormData对象中
-        console.log(articleVip);
-        console.log(formData);
         $.ajax({
             url: "/user/publishArticleAction",
             type: 'POST',

@@ -85,11 +85,8 @@
                             </div>
                         </div>
                     </#if>
-
                 </form>
             </div>
-
-
         </div>
     </div>
 </div>
