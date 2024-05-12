@@ -34,6 +34,14 @@
                             <input type="file" class="form-control" accept="image/*" name="articleCoverFile"
                                    id="articleCoverFile">
                         </div>
+                        <label for="articleVip" class="col-xs-2 col-sm-1">VIP属性</label>
+                        <div class="col-xs-10 col-sm-3">
+                            <select class="form-control" id="articleVip" name="articleVip">
+                                <option value=0>普通用户</option>
+                                <option value=1>VIP用户</option>
+                            </select>
+                        </div>
+                    </div>
                         <#if articleType0List?? && articleType0List?size gt 0>
                             <label for="articleType0" class="col-xs-2 col-sm-1">类型</label>
                             <div class="col-xs-4 col-sm-2">
@@ -144,6 +152,7 @@
         let articleCoverUrl = $("#articleCoverUrl").val();
         let articleTitle = $("#articleTitle").val();
         let articleTypeId = $("#articleTypeId").val();
+        let articleVip=$("#articleVip").val();
         let articleContext = he.getHtml();
 
         if (!checkNotNull(articleTitle)) {
@@ -162,7 +171,10 @@
             zuiMsg("请填写文章内容");
             return;
         }
-
+        if (!checkNotNull(articleVip)) {
+            zuiMsg("请填写文章类型");
+            return;
+        }
         let formData = new FormData();
         formData.append("articleCoverFile", $("#articleCoverFile")[0].files[0]);
         formData.append("articleId", articleId);
@@ -171,6 +183,7 @@
         formData.append("articleTypeId", articleTypeId);
         formData.append("articleTagIds", articleTagIds);
         formData.append("articleContext", articleContext);
+        formData.append("articleVip", articleVip); // 将VIP属性值添加到FormData对象中
         $.ajax({
             url: "/user/publishArticleAction",
             type: 'POST',

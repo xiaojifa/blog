@@ -85,4 +85,6 @@ public class Article implements Serializable {
     private Integer articleCollectionNumber;
 
 
+
+
 }

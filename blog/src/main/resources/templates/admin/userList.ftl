@@ -62,13 +62,13 @@
                         </td>
                         <td>
                             <#if (user.userVip)?? && (user.userVip) == 1>
-                                <span class="label label-success">VIP用户</span>
+                                <span class="label label-success">vip</span>
                             <#else >
-                                <span class="label label-danger">普通用户</span>
+                                <span class="label label-danger">非vip</span>
                             </#if>
                         </td>
                         <td>
-                            <button onclick="userUpdate('${(user.userId)!}', '${(user.userName)!}', '${(user.userFrozen)!}', '${(user.userPublishArticle)!}', '${(user.userPublishTopic)!}', '${(user.userVip)!}')"
+                            <button onclick="userUpdate('${(user.userId)!}', '${(user.userName)!}', '${(user.userFrozen)!}', '${(user.userPublishArticle)!}','${(user.userPublishTopic)!}','${(user.userVip)!}')"
                                     type="button" class="btn btn-mini"><i class="icon icon-cog"></i> 修改
                             </button>
                             <button onclick="delUser('${user.userId}')"
@@ -190,7 +190,7 @@
                         </div>
                     </div>
                     <div class="form-group">
-                        <label for="userVip">VIP</label>
+                        <label for="userVip">Vip</label>
                         <div class="input-group">
                             <label class="radio-inline">
                                 <input type="radio" name="userVip" value="1"> 是

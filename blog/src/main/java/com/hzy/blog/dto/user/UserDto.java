@@ -46,6 +46,4 @@ public class UserDto {
      * 是否是VIP
      */
     private Integer userVip;
-
-
 }

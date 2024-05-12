@@ -64,5 +64,4 @@ public class User implements Serializable {
      */
     private LocalDateTime userRegisterTime;
 
-
 }

@@ -31,6 +31,10 @@ public class ArticleTypeUpdateDto {
      * 文章分类父id
      */
     private String articleTypeParentId;
+    /**
+     * 文章vip
+     */
+    private String articleVip;
 
 
 }

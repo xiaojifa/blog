@@ -173,6 +173,7 @@ public class ViewController {
         user.setUserPassword(SecureUtil.md5(user.getUserId() + user.getUserPassword()));
         user.setUserFrozen(0);
         user.setUserPublishArticle(1);
+        user.setUserVip(0);
         if (userService.save(user)) {
             return CommonResult.success("注册成功");
         }
