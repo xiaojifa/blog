@@ -22,6 +22,40 @@
     .goodCommentBgColor {
         background-color: #2c8931;
     }
+
+    .go-top1 {
+        position: fixed;	        /* 设置fixed固定定位 */
+        bottom: 20px;		/* 距离浏览器窗口下边框20px */
+        right: 20px;		/* 距离浏览器窗口右边框20px */
+    }
+
+    .go-top2 {
+        position: fixed;	        /* 设置fixed固定定位 */
+        bottom: 315px;		/* 距离浏览器窗口下边框20px */
+        left: 35px;		/* 距离浏览器窗口右边框20px */
+    }
+
+    .go-top1 a {
+        display: block;			/* 将<a>标签设为块元素，用于美化样式 */
+        text-decoration: none;		/* 取消超链接下画线 */
+        color: #333;			/* 设置文本颜色 */
+        background-color: #f2f2f2;		/* 设置背景颜色 */
+        border: 1px solid #ccc;		/* 设置边框样式 */
+        padding: 10px 20px;			/* 设置内边距 */
+        border-radius: 5px;			/* 设置圆角矩形 */
+        letter-spacing: 2px;		/* 设置文字间距 */
+    }
+
+    .go-top2 a {
+        display: block;			/* 将<a>标签设为块元素，用于美化样式 */
+        text-decoration: none;		/* 取消超链接下画线 */
+        color: #333;			/* 设置文本颜色 */
+        background-color: #f2f2f2;		/* 设置背景颜色 */
+        border: 5px solid #ccc;		/* 设置边框样式 */
+        padding: 100px 50px;			/* 设置内边距 */
+        border-radius: 5px;			/* 设置圆角矩形 */
+        letter-spacing: 2px;		/* 设置文字间距 */
+    }
 </style>
 <div class = "col-xs-12">
     <ol class = "breadcrumb">
@@ -103,6 +137,34 @@
         </div>
     </div>
 </div>
+
+<!-- 悬浮框结构 -->
+<div class="go-top1">
+    <a href="#">返回<br>顶部</a>
+</div>
+
+<!-- 悬浮框结构 -->
+<div class="go-top2">
+    <div class="panel-heading">
+        <i class="icon-paper-clip"></i>作者资料
+    </div>
+    <div class="panel-body">
+        <span class="label"><i class="icon-time"></i> 注册时间：</span> <span
+                class="label label-success">${(article.userRegisterTime)}</span>
+        <br/>
+        <span class="label"><i class="icon-user"></i> 用户名&emsp;：</span> <span
+                class="label label-success">${(article.userName)!}</span>
+        <br/>
+        <span class="label"><i class="icon-leaf"></i> 状态&emsp;&emsp;：</span>
+        <#if (user.userFrozen)?? && (article.userFrozen)==1>
+            <span class="label label-danger">冻结</span>
+        <#else >
+            <span class="label label-success">正常</span>
+        </#if>
+        <br/>
+    </div>
+</div>
+
 <script>
     $("#commentReplyBtn").hide();
     let articleId = '${(article.articleId)!}';

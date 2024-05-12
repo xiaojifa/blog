@@ -33,6 +33,21 @@ public class ArticleVo {
     private String userName;
 
     /**
+     * 用户是否是VIP
+     */
+    private Integer userVip;
+
+    /**
+     * 用户是否冻结
+     */
+    private Integer userFrozen;
+
+    /**
+     * 用户注册时间
+     */
+    private LocalDateTime userRegisterTime;
+
+    /**
      * 文章标题
      */
     private String articleTitle;

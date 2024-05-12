@@ -490,10 +490,10 @@ public class ViewController {
             topicVo.setUserName(CommonUtils.getHideMiddleStr(userName));
         }
 
-        //文章
+        //话题
         model.addAttribute("topic", topicVo);
 
-        //文章类型
+        //话题类型
         if (Objects.nonNull(topicVo) && StrUtil.isNotBlank(topicVo.getTopicTypeId())) {
             TopicType topicType = topicTypeService.getOne(Wrappers.<TopicType>lambdaQuery().eq(TopicType::getTopicTypeId, topicVo.getTopicTypeId()).select(TopicType::getTopicTypeName, TopicType::getTopicTypeId), false);
             model.addAttribute("topicType", topicType);
@@ -526,7 +526,6 @@ public class ViewController {
         ++articleLookNumber;
         article.setArticleLookNumber(articleLookNumber);
         articleService.updateById(article);
-
 
         //隐藏作者用户名
         String userName = articleVo.getUserName();
