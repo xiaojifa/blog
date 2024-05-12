@@ -77,7 +77,7 @@ public class Article implements Serializable {
     /**
      * 是否是VIP文章 0否，1是
      */
-    private Integer articleVip;
+    private String articleVip;
 
     /**
      * 收藏次数
