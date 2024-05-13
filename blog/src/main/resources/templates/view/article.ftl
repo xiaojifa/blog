@@ -82,6 +82,7 @@
                     </h1>
                     <dl class = "dl-inline">
                         <dd><i class = "icon-user"></i>发布者:${(article.userName)!}</dd>
+
                         <dt>
                         <dd class = "pull-right">
                             <span class = "label label-info">
@@ -101,7 +102,13 @@
                     </dl>
                 </header>
                 <section class = "content">
-                    <p>${(article.articleContext)!}</p>
+                    <#if user??>
+                        111
+                        <#else>请先登录
+                    </#if>
+                    <#if user??>
+                        <p>${(article.articleContext)!}</p>
+                    </#if>
                 </section>
                 <footer>
                     <div class = "col-xs-12" id = "commentListBox">
@@ -154,6 +161,9 @@
         <br/>
         <span class="label"><i class="icon-user"></i> 用户名&emsp;：</span> <span
                 class="label label-success">${(article.userName)!}</span>
+        <br/>
+        <span class="label"><i class="icon-user"></i> VIP&emsp;：</span> <span
+                class="label label-success">${(article.userVip)!}</span>
         <br/>
         <span class="label"><i class="icon-leaf"></i> 状态&emsp;&emsp;：</span>
         <#if (user.userFrozen)?? && (article.userFrozen)==1>

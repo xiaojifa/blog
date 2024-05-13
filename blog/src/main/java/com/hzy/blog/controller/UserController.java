@@ -407,7 +407,6 @@ public class UserController {
                 return CommonResult.failed("图片的像素为 250px * 170px");
             }
 
-
             publishArticleActionDto.setArticleCoverUrl(uploadFileListService.getUploadFileUrl(articleCoverFile));
         }
         return articleService.publishArticleAction(request, publishArticleActionDto);

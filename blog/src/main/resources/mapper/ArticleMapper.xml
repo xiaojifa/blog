@@ -18,7 +18,7 @@
                artt.article_type_name
         FROM article art
                  LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
-                 LEFT JOIN user u on u.user_id = art.user_id
+                 LEFT JOIN user  u ON u.user_id = art.user_id
     </sql>
 
     <select id="articleList" resultType="com.hzy.blog.vo.ArticleVo">

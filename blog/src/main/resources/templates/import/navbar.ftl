@@ -52,7 +52,7 @@
                 <ul class="nav navbar-nav navbar-right">
                     <#if user??>
                         <li>
-                            <a href="chat"><i class="icon-user"></i> 聊天</a>
+                            <a href="/view/chat"><i class="icon-user"></i> 聊天</a>
                         <li>
                         <li>
                             <a href="/user/manager"><i class="icon-user"></i> 个人中心</a>

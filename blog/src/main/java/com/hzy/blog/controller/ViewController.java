@@ -618,7 +618,6 @@ public class ViewController {
         return CommonResult.success(CommonPage.restPage(commentVoIPage));
     }
 
-
     /**
      * 联系
      *
