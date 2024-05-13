@@ -396,16 +396,16 @@ public class UserController {
             return CommonResult.failed("当前您还没有权限发布，请联系管理员");
         }
         if (Objects.nonNull(articleCoverFile)) {
-            //判断是否上传的图片，是否是我们指定的像素
-            BufferedImage read = ImageIO.read(articleCoverFile.getInputStream());
-            if (Objects.isNull(read)) {
-                return CommonResult.failed("请上传图片文件");
-            }
-            int width = read.getWidth();
-            int height = read.getHeight();
-            if (width != 250 || height != 170) {
-                return CommonResult.failed("图片的像素为 250px * 170px");
-            }
+//            //判断是否上传的图片，是否是我们指定的像素
+//            BufferedImage read = ImageIO.read(articleCoverFile.getInputStream());
+//            if (Objects.isNull(read)) {
+//                return CommonResult.failed("请上传图片文件");
+//            }
+//            int width = read.getWidth();
+//            int height = read.getHeight();
+//            if (width != 250 || height != 170) {
+//                return CommonResult.failed("图片的像素为 250px * 170px");
+//            }
 
             publishArticleActionDto.setArticleCoverUrl(uploadFileListService.getUploadFileUrl(articleCoverFile));
         }

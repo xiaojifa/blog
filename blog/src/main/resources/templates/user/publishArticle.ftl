@@ -103,148 +103,151 @@
                             </div>
                         </div>
                     </#if>
+
                 </form>
             </div>
+
+
         </div>
     </div>
-    <div class="col-xs-12">
-        <div class="panel">
-            <div class="panel-body">
-                <textarea id="articleContext" maxlength="14999" minlength="5">${(article.articleContext)!}</textarea>
+</div>
+<div class="col-xs-12">
+    <div class="panel">
+        <div class="panel-body">
+            <textarea id="articleContext" maxlength="14999" minlength="5">${(article.articleContext)!}</textarea>
 
-                <div class="form-group" style="margin-top: 15px;text-align: right;">
-                    <button onclick="publishArticle()" type="button" class="btn btn-success"><i
-                                class="icon-edit-sign"></i> 发布
-                    </button>
-                </div>
+            <div class="form-group" style="margin-top: 15px;text-align: right;">
+                <button onclick="publishArticle()" type="button" class="btn btn-success"><i
+                            class="icon-edit-sign"></i> 发布
+                </button>
             </div>
         </div>
     </div>
-    <script src="//cdn.jsdelivr.net/gh/xwlrbh/HandyEditor@1.8.0/HandyEditor.min.js"></script>
-    <script>
-        let articleTagIds = [];
+</div>
+<script src="//cdn.jsdelivr.net/gh/xwlrbh/HandyEditor@1.8.0/HandyEditor.min.js"></script>
+<script>
+    let articleTagIds = [];
 
-        var he = HE.getEditor('articleContext', {
-            width: '100%',
-            height: '200px',
-            autoHeight: true,
-            autoFloat: false,
-            topOffset: 0,
-            uploadPhoto: true,
-            uploadPhotoHandler: '/user/uploadFile',
-            uploadPhotoSize: 1024,
-            uploadPhotoType: 'gif,png,jpg,jpeg',
-            uploadPhotoSizeError: '不能上传大于1024KB的图片',
-            uploadPhotoTypeError: '只能上传gif,png,jpg,jpeg格式的图片',
-            uploadParam: {},
-            lang: 'zh-jian',
-            skin: 'HandyEditor',
-            externalSkin: '',
-            item: ['bold', 'italic', 'strike', 'underline', 'fontSize', 'fontName', 'paragraph', 'color', 'backColor', '|', 'center', 'left', 'right', 'full', 'indent', 'outdent', '|', 'link', 'unlink', 'textBlock', 'code', 'selectAll', 'removeFormat', '|', 'image', 'expression', 'horizontal', 'orderedList', 'unorderedList', '|', 'undo', 'redo', '|', 'html']
-        });
+    var he = HE.getEditor('articleContext', {
+        width: '100%',
+        height: '200px',
+        autoHeight: true,
+        autoFloat: false,
+        topOffset: 0,
+        uploadPhoto: true,
+        uploadPhotoHandler: '/user/uploadFile',
+        uploadPhotoSize: 1024,
+        uploadPhotoType: 'gif,png,jpg,jpeg',
+        uploadPhotoSizeError: '不能上传大于1024KB的图片',
+        uploadPhotoTypeError: '只能上传gif,png,jpg,jpeg格式的图片',
+        uploadParam: {},
+        lang: 'zh-jian',
+        skin: 'HandyEditor',
+        externalSkin: '',
+        item: ['bold', 'italic', 'strike', 'underline', 'fontSize', 'fontName', 'paragraph', 'color', 'backColor', '|', 'center', 'left', 'right', 'full', 'indent', 'outdent', '|', 'link', 'unlink', 'textBlock', 'code', 'selectAll', 'removeFormat', '|', 'image', 'expression', 'horizontal', 'orderedList', 'unorderedList', '|', 'undo', 'redo', '|', 'html']
+    });
 
-        function publishArticle() {
-            let articleId = $("#articleId").val();
-            let articleCoverUrl = $("#articleCoverUrl").val();
-            let articleTitle = $("#articleTitle").val();
-            let articleTypeId = $("#articleTypeId").val();
-            let articleVip=$("#articleVip").val();
-            let articleContext = he.getHtml();
+    function publishArticle() {
+        let articleId = $("#articleId").val();
+        let articleCoverUrl = $("#articleCoverUrl").val();
+        let articleTitle = $("#articleTitle").val();
+        let articleTypeId = $("#articleTypeId").val();
+        let articleVip=$("#articleVip").val();
+        let articleContext = he.getHtml();
 
-            if (!checkNotNull(articleTitle)) {
-                zuiMsg("请填写标题");
-                return;
-            }
-            if (!checkNotNull(articleCoverUrl) && !checkNotNull($("#articleCoverFile").val())) {
-                zuiMsg("请填选择封面");
-                return;
-            }
-            if (!checkNotNull(articleTypeId)) {
-                zuiMsg("请选择类型");
-                return;
-            }
-            if (!checkNotNull(articleContext)) {
-                zuiMsg("请填写文章内容");
-                return;
-            }
-            if (!checkNotNull(articleVip)) {
-                zuiMsg("请填写VIP类型");
-                return;
-            }
-
-            let formData = new FormData();
-            formData.append("articleCoverFile", $("#articleCoverFile")[0].files[0]);
-            formData.append("articleId", articleId);
-            formData.append("articleCoverUrl", articleCoverUrl);
-            formData.append("articleTitle", articleTitle);
-            formData.append("articleTypeId", articleTypeId);
-            formData.append("articleTagIds", articleTagIds);
-            formData.append("articleContext", articleContext);
-            formData.append("articleVip", articleVip); // 将VIP属性值添加到FormData对象中
-            $.ajax({
-                url: "/user/publishArticleAction",
-                type: 'POST',
-                data: formData,
-                // 告诉jQuery不要去处理发送的数据
-                processData: false,
-                // 告诉jQuery不要去设置Content-Type请求头
-                contentType: false,
-                beforeSend: function () {
-                    console.log("正在进行，请稍候");
-                },
-                success: function (data) {
-                    if (data.code === 200) {
-                        alert(data.message);
-                        window.location.href = "/user/myArticleList";
-                        return;
-                    }
-                    zuiMsg(data.message);
-                },
-                error: function (responseStr) {
-                    console.log("error");
+        if (!checkNotNull(articleTitle)) {
+            zuiMsg("请填写标题");
+            return;
+        }
+        if (!checkNotNull(articleCoverUrl) && !checkNotNull($("#articleCoverFile").val())) {
+            zuiMsg("请填选择封面");
+            return;
+        }
+        if (!checkNotNull(articleTypeId)) {
+            zuiMsg("请选择类型");
+            return;
+        }
+        if (!checkNotNull(articleContext)) {
+            zuiMsg("请填写文章内容");
+            return;
+        }
+        if (!checkNotNull(articleVip)) {
+            zuiMsg("请填写文章类型");
+            return;
+        }
+        let formData = new FormData();
+        formData.append("articleCoverFile", $("#articleCoverFile")[0].files[0]);
+        formData.append("articleId", articleId);
+        formData.append("articleCoverUrl", articleCoverUrl);
+        formData.append("articleTitle", articleTitle);
+        formData.append("articleTypeId", articleTypeId);
+        formData.append("articleTagIds", articleTagIds);
+        formData.append("articleContext", articleContext);
+        formData.append("articleVip", articleVip); // 将VIP属性值添加到FormData对象中
+        $.ajax({
+            url: "/user/publishArticleAction",
+            type: 'POST',
+            data: formData,
+            // 告诉jQuery不要去处理发送的数据
+            processData: false,
+            // 告诉jQuery不要去设置Content-Type请求头
+            contentType: false,
+            beforeSend: function () {
+                console.log("正在进行，请稍候");
+            },
+            success: function (data) {
+                if (data.code === 200) {
+                    alert(data.message);
+                    window.location.href = "/user/myArticleList";
+                    return;
                 }
-            });
-
-        }
-
-
-        function selectArticleTag(articleTagId) {
-            let index = articleTagIds.indexOf(articleTagId);
-            if (index > -1) {
-                articleTagIds.splice(index, 1);
-                $("#" + articleTagId).removeClass("label-success");
-            } else {
-                articleTagIds[articleTagIds.length] = articleTagId;
-                $("#" + articleTagId).addClass("label-success");
-            }
-
-            console.log(articleTagIds);
-        }
-
-        function getArticleTypeChild() {
-            $("#articleTypeId").html("");
-
-            $.post("/user/getArticleTypeChild", {
-                    articleTypeId: $("#articleType0").val()
-                },
-                function (data) {
-                    if (data.code === 200) {
-                        let articleTypeList = data.data;
-                        for (let i = 0; i < articleTypeList.length; i++) {
-                            $("#articleTypeId").append('<option value="' + articleTypeList[i].articleTypeId + '">' + articleTypeList[i].articleTypeName + '</option>')
-                        }
-                        return;
-                    }
-                    zuiMsg(data.message);
-                });
-        }
-
-        $(function () {
-            let selectedTags = $("span.label-success");
-            for (let i = 0; i < selectedTags.length; i++) {
-                articleTagIds[i] = selectedTags[i].id;
+                zuiMsg(data.message);
+            },
+            error: function (responseStr) {
+                console.log("error");
             }
         });
 
-    </script>
+    }
+
+
+    function selectArticleTag(articleTagId) {
+        let index = articleTagIds.indexOf(articleTagId);
+        if (index > -1) {
+            articleTagIds.splice(index, 1);
+            $("#" + articleTagId).removeClass("label-success");
+        } else {
+            articleTagIds[articleTagIds.length] = articleTagId;
+            $("#" + articleTagId).addClass("label-success");
+        }
+
+        console.log(articleTagIds);
+    }
+
+    function getArticleTypeChild() {
+        $("#articleTypeId").html("");
+
+        $.post("/user/getArticleTypeChild", {
+                articleTypeId: $("#articleType0").val()
+            },
+            function (data) {
+                if (data.code === 200) {
+                    let articleTypeList = data.data;
+                    for (let i = 0; i < articleTypeList.length; i++) {
+                        $("#articleTypeId").append('<option value="' + articleTypeList[i].articleTypeId + '">' + articleTypeList[i].articleTypeName + '</option>')
+                    }
+                    return;
+                }
+                zuiMsg(data.message);
+            });
+    }
+
+    $(function () {
+        let selectedTags = $("span.label-success");
+        for (let i = 0; i < selectedTags.length; i++) {
+            articleTagIds[i] = selectedTags[i].id;
+        }
+    });
+
+</script>
 <#include "../import/viewBottom.ftl">
