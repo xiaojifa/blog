@@ -41,4 +41,9 @@ public class PublishArticleActionDto {
     @Length(min = 5, max = 15000, message = "文章内容在5-15000字符之间")
     private String articleContext;
 
+    /**
+     * 文章权限类型
+     */
+    @NotBlank(message = "请选择文章的权限类型")
+    private String articleVip;
 }

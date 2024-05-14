@@ -510,15 +510,15 @@ public class ViewController {
      * @return
      */
     @GetMapping("/article")
-    public String articleView(HttpServletRequest request, String articleId, Model model) {
+    public String articleView(HttpServletRequest request, String articleId,String userVip,Model model) {
         HttpSession session = request.getSession();
 
         ArticleVo articleVo = articleService.getArticle(articleId);
         if (Objects.isNull(articleVo)) {
             return "redirect:/";
         }
-
         Article article = articleService.getOne(Wrappers.<Article>lambdaQuery().eq(Article::getArticleId, articleVo.getArticleId()).select(Article::getArticleId, Article::getArticleLookNumber), false);
+
         //添加查看次数
         Integer articleLookNumber = article.getArticleLookNumber();
         if (Objects.isNull(articleLookNumber) || articleLookNumber < 0) {
@@ -543,8 +543,17 @@ public class ViewController {
             model.addAttribute("articleType", articleType);
         }
 
-        return "/view/article";
+        if(Integer.parseInt(userVip)==1){
+    return "/view/article";
+} else if (Integer.parseInt(userVip) == 0 && articleVo.getArticleVip().equals(Integer.parseInt(userVip))) {
+    return "/view/article";
+}else {
+            model.addAttribute("message", "Vip文章，您还不是Vip");
+
+}
+        return "redirect:/";
     }
+
 
     /**
      * 获取话题评论列表
