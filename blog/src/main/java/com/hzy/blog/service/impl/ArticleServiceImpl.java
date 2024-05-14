@@ -96,7 +96,7 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         article.setArticleCoverUrl(publishArticleActionDto.getArticleCoverUrl());
         article.setUserId(user.getUserId());
         article.setArticleTitle(publishArticleActionDto.getArticleTitle());
-        article.setArticleVip(publishArticleActionDto.getArticleVip());
+//        article.setArticleVip(publishArticleActionDto.getArticleVip());
         if (StrUtil.isBlank(article.getArticleId())) {
             article.setArticleAddTime(LocalDateTime.now());
         }

@@ -87,14 +87,20 @@ public class UserController {
     @PostMapping("/uploadFile")
     @ResponseBody
     public String uploadFile(HttpServletRequest request, MultipartFile file) {
+
+        // 检查文件是否为空，如果为空则返回null
         if (file.isEmpty()) {
             return null;
         }
+
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
+        // 检查用户是否有发布文章的权限
         if (Objects.isNull(user.getUserPublishArticle()) || user.getUserPublishArticle() != 1) {
             return null;
         }
 
+        // 调用uploadFileListService的getUploadFileUrl方法获取文件的URL，并返回该URL
         return uploadFileListService.getUploadFileUrl(file);
     }
 
@@ -117,15 +123,20 @@ public class UserController {
      */
     @GetMapping("/collectionTopic/list")
     public String collectionTopicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
+        // 创建一个Page对象来分页查询话题
         Page<Topic> topicPage = new Page<>(pageNumber, 24);
+        // 调用userCollectionTopicService的list方法获取用户收藏的话题ID列表，并将其转换为List类型
         List<String> topicIdList = userCollectionTopicService.list(Wrappers.<UserCollectionTopic>lambdaQuery()
                         .eq(UserCollectionTopic::getUserId, user.getUserId())
                         .select(UserCollectionTopic::getTopicId)).stream()
                 .map(UserCollectionTopic::getTopicId)
                 .collect(Collectors.toList());
+        // 如果该列表不为空，则使用LambdaQueryWrapper构建查询条件(LambdaQueryWrapper是Mybatis-Plus中的一个查询条件构造器，用于构建查询条件)
         if (CollUtil.isNotEmpty(topicIdList)) {
             LambdaQueryWrapper<Topic> wrapper = Wrappers.<Topic>lambdaQuery()
+                    // 查询话题的相关信息
                     .in(Topic::getTopicId, topicIdList)
                     .select(Topic::getTopicId,
                             Topic::getTopicAddTime,
@@ -134,73 +145,12 @@ public class UserController {
                             Topic::getTopicLookNumber,
                             Topic::getTopicTitle);
             IPage<Topic> topicIPage = topicService.page(topicPage, wrapper);
+            // 将结果添加到Model对象中
             model.addAttribute("topicIPage", CommonPage.restPage(topicIPage));
         }
+
+        // 返回"/user/collectionList"视图名称
         return "/user/collectionList";
-    }
-
-    /**
-     * 用户收藏
-     *
-     * @param pageNumber
-     * @return
-     */
-    @GetMapping("/topic/list")
-    public String topicList(HttpServletRequest request, Integer pageNumber, Model model) {
-        User user = (User) request.getSession().getAttribute("user");
-        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
-        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, null);
-        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
-        return "/user/topicList";
-    }
-
-    /**
-     * 用户收藏文章
-     *
-     * @param pageNumber
-     * @return
-     */
-    @GetMapping("/collection/list")
-    public String collectionList(HttpServletRequest request, Integer pageNumber, Model model) {
-        User user = (User) request.getSession().getAttribute("user");
-
-        Page<Article> articlePage = new Page<>(pageNumber, 24);
-
-
-        List<String> articleIdList = userCollectionArticleService.list(Wrappers.<UserCollectionArticle>lambdaQuery()
-                        .eq(UserCollectionArticle::getUserId, user.getUserId())
-                        .select(UserCollectionArticle::getArticleId)).stream()
-                .map(UserCollectionArticle::getArticleId)
-                .collect(Collectors.toList());
-        if (CollUtil.isNotEmpty(articleIdList)) {
-            LambdaQueryWrapper<Article> wrapper = Wrappers.<Article>lambdaQuery()
-                    .in(Article::getArticleId, articleIdList)
-                    .select(Article::getArticleId,
-                            Article::getArticleAddTime,
-                            Article::getArticleCollectionNumber,
-                            Article::getArticleGoodNumber,
-                            Article::getArticleLookNumber,
-                            Article::getArticleCoverUrl,
-                            Article::getArticleTitle);
-            IPage<Article> articleIPage = articleService.page(articlePage, wrapper);
-            model.addAttribute("articleIPage", CommonPage.restPage(articleIPage));
-        }
-        return "/user/collectionList";
-    }
-
-    /**
-     * 用户收藏
-     *
-     * @param pageNumber
-     * @return
-     */
-    @GetMapping("/article/list")
-    public String articleList(HttpServletRequest request, Integer pageNumber, Model model) {
-        User user = (User) request.getSession().getAttribute("user");
-        Page<ArticleVo> articlePage = new Page<>(pageNumber, 24);
-        IPage<ArticleVo> articleVoIPage = articleService.articleList(articlePage, null, null);
-        model.addAttribute("articleVoIPage", CommonPage.restPage(articleVoIPage));
-        return "/user/articleList";
     }
 
     /**
@@ -210,35 +160,55 @@ public class UserController {
      */
     @GetMapping("/publishTopic")
     public String releaseTopic(HttpServletRequest request, Model model, String topicId) {
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
+        // 判断用户是否有发布话题的权限且不为空
         if (Objects.isNull(user) || Objects.isNull(user.getUserPublishTopic()) || user.getUserPublishTopic() != 1) {
+            // 没有权限，则重定向到首页
             return "redirect:/";
         }
 
-        Topic topic = topicService.getOne(Wrappers.<Topic>lambdaQuery().eq(Topic::getUserId, user.getUserId()).eq(Topic::getTopicId, topicId));
+        // 根据话题ID查询话题信息
+        Topic topic = topicService.getOne(Wrappers.<Topic>lambdaQuery()
+                .eq(Topic::getUserId, user.getUserId())
+                .eq(Topic::getTopicId, topicId));
+        // 不为空，将结果添加到Model对象中
         if (Objects.nonNull(topic)) {
             model.addAttribute("topic", topic);
 
             //获取文章标签
-            List<TopicTagList> topicTagLists = topicTagListService.list(Wrappers.<TopicTagList>lambdaQuery()
-                    .eq(TopicTagList::getTopicId, topic.getTopicId())
-                    .select(TopicTagList::getTopicTagId));
+            List<TopicTagList> topicTagLists = topicTagListService
+                    .list(Wrappers.<TopicTagList>lambdaQuery()
+                            .eq(TopicTagList::getTopicId, topic.getTopicId())
+                            .select(TopicTagList::getTopicTagId));
 
             if (CollUtil.isNotEmpty(topicTagLists)) {
-                List<String> topicTagIdList = topicTagLists.stream().map(TopicTagList::getTopicTagId).collect(Collectors.toList());
+                List<String> topicTagIdList = topicTagLists.stream()
+                        .map(TopicTagList::getTopicTagId)
+                        .collect(Collectors.toList());
                 model.addAttribute("topicTagIdList", topicTagIdList);
             }
+
             //获取该文章类型的同级类型
             String topicTypeId = topic.getTopicTypeId();
-            List<TopicType> topicSameTypeList = topicTypeService.list(Wrappers.<TopicType>lambdaQuery().eq(TopicType::getTopicTypeParentId, topicTypeService.getById(topicTypeId).getTopicTypeParentId()));
+            List<TopicType> topicSameTypeList = topicTypeService
+                    .list(Wrappers.<TopicType>lambdaQuery()
+                            .eq(TopicType::getTopicTypeParentId, topicTypeService.getById(topicTypeId).getTopicTypeParentId()));
             model.addAttribute("topicSameTypeList", topicSameTypeList);
 
             //获取该文章上级类型
-            model.addAttribute("topicTypeParentId", topicTypeService.getById(topic.getTopicTypeId()).getTopicTypeParentId());
+            model.addAttribute("topicTypeParentId", topicTypeService
+                    .getById(topic.getTopicTypeId())
+                    .getTopicTypeParentId());
         }
 
         //获取类型
-        List<TopicType> topicType0List = topicTypeService.list(Wrappers.<TopicType>lambdaQuery().isNull(TopicType::getTopicTypeParentId).or().eq(TopicType::getTopicTypeParentId, "").orderByAsc(TopicType::getTopicTypeSort));
+        List<TopicType> topicType0List = topicTypeService
+                .list(Wrappers.<TopicType>lambdaQuery()
+                        .isNull(TopicType::getTopicTypeParentId)
+                        .or()
+                        .eq(TopicType::getTopicTypeParentId, "")
+                        .orderByAsc(TopicType::getTopicTypeSort));
         model.addAttribute("topicType0List", topicType0List);
 
         //获取标签
@@ -257,14 +227,16 @@ public class UserController {
     @PostMapping("/getTopicTypeChild")
     @ResponseBody
     public CommonResult getTopicTypeChild(String topicTypeId) {
+        // 接收一个一级话题类型ID作为参数
         if (StrUtil.isBlank(topicTypeId)) {
             return CommonResult.failed("请选择一级分类");
         }
-
+        // 返回该一级话题类型下的所有二级话题类型列表
         List<TopicType> topicTypeList = topicTypeService.list(Wrappers.<TopicType>lambdaQuery()
                 .eq(TopicType::getTopicTypeParentId, topicTypeId)
                 .select(TopicType::getTopicTypeId, TopicType::getTopicTypeName));
 
+        // 返回成功的结果，并将二级话题类型列表作为数据返回
         return CommonResult.success(topicTypeList);
     }
 
@@ -278,14 +250,19 @@ public class UserController {
     @ResponseBody
     public CommonResult publishTopicAction(HttpServletRequest request, @Valid PublishTopicActionDto publishTopicActionDto, MultipartFile topicCoverFile) throws IOException {
         HttpSession session = request.getSession();
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) session.getAttribute("user");
+        // 判断用户是否登录过期
         if (Objects.isNull(user)){
             return CommonResult.failed("登录过期，请重新登录");
         }
+        // 获取用户信息
         User serviceById = userService.getById(user.getUserId());
         if(Objects.isNull(serviceById)){
+            // 将其存储在session中
             session.setAttribute("user",serviceById);
         }
+        // 判断用户是否有发布话题的权限
         if (Objects.isNull(serviceById.getUserPublishTopic()) || serviceById.getUserPublishTopic() != 1) {
             return CommonResult.failed("当前您还没有权限发布，请联系管理员");
         }
@@ -300,11 +277,86 @@ public class UserController {
             if (width != 250 || height != 170) {
                 return CommonResult.failed("图片的像素为 250px * 170px");
             }
-
-
+            // 将上传的图片文件的URL设置到PublishTopicActionDto对象中
             publishTopicActionDto.setTopicCoverUrl(uploadFileListService.getUploadFileUrl(topicCoverFile));
         }
+        // 调用topicService的publishTopicAction方法发布话题
         return topicService.publishTopicAction(request, publishTopicActionDto);
+    }
+
+    /**
+     * 用户收藏
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/topic/list")
+    public String topicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
+        User user = (User) request.getSession().getAttribute("user");
+        // 创建一个Page对象来分页查询话题
+        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
+        // 调用topicService的topicList方法获取话题列表
+        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, null);
+        // 将结果添加到Model对象中
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+        // 返回"/user/topicList"视图名称
+        return "/user/topicList";
+    }
+
+    /**
+     * 用户收藏文章
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/collection/list")
+    public String collectionList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
+        User user = (User) request.getSession().getAttribute("user");
+        // 创建一个Page对象来分页查询文章
+        Page<Article> articlePage = new Page<>(pageNumber, 24);
+        // 调用userCollectionArticleService的list方法获取用户收藏的文章ID列表，并将其转换为List类型
+        List<String> articleIdList = userCollectionArticleService.list(Wrappers.<UserCollectionArticle>lambdaQuery()
+                        .eq(UserCollectionArticle::getUserId, user.getUserId())
+                        .select(UserCollectionArticle::getArticleId)).stream()
+                .map(UserCollectionArticle::getArticleId)
+                .collect(Collectors.toList());
+        // 如果该列表不为空，则使用LambdaQueryWrapper构建查询条件
+        if (CollUtil.isNotEmpty(articleIdList)) {
+            LambdaQueryWrapper<Article> wrapper = Wrappers.<Article>lambdaQuery()
+                    .in(Article::getArticleId, articleIdList)
+                    .select(Article::getArticleId,
+                            Article::getArticleAddTime,
+                            Article::getArticleCollectionNumber,
+                            Article::getArticleGoodNumber,
+                            Article::getArticleLookNumber,
+                            Article::getArticleCoverUrl,
+                            Article::getArticleTitle);
+            IPage<Article> articleIPage = articleService.page(articlePage, wrapper);
+            model.addAttribute("articleIPage", CommonPage.restPage(articleIPage));
+        }
+        // 返回"/user/collectionList"视图名称
+        return "/user/collectionList";
+    }
+
+    /**
+     * 用户收藏
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/article/list")
+    public String articleList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
+        User user = (User) request.getSession().getAttribute("user");
+        // 创建一个Page对象来分页查询文章
+        Page<ArticleVo> articlePage = new Page<>(pageNumber, 24);
+        // 调用articleService的articleList方法获取文章列表
+        IPage<ArticleVo> articleVoIPage = articleService.articleList(articlePage, null, null);
+        // 将结果添加到Model对象中
+        model.addAttribute("articleVoIPage", CommonPage.restPage(articleVoIPage));
+        return "/user/articleList";
     }
 
 
@@ -406,7 +458,6 @@ public class UserController {
 //            if (width != 250 || height != 170) {
 //                return CommonResult.failed("图片的像素为 250px * 170px");
 //            }
-
             publishArticleActionDto.setArticleCoverUrl(uploadFileListService.getUploadFileUrl(articleCoverFile));
         }
         return articleService.publishArticleAction(request, publishArticleActionDto);
@@ -421,12 +472,18 @@ public class UserController {
      */
     @GetMapping("/myTopicList")
     public String myTopicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
+        // 判断页数为空或小于1
         if (Objects.isNull(pageNumber) || pageNumber < 1) {
+            // 赋值为1
             pageNumber = 1;
         }
+        // 创建一个Page对象，设置每页显示24条数据
         Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
+        // 调用topicService的topicList方法获取用户发布的话题列表
         IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, user.getUserId());
+        // 将话题列表添加到Model对象中
         model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
 
         return "/user/myTopicList";
@@ -441,6 +498,7 @@ public class UserController {
      */
     @GetMapping("/myArticleList")
     public String myArticleList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
         if (Objects.isNull(pageNumber) || pageNumber < 1) {
             pageNumber = 1;
@@ -461,6 +519,7 @@ public class UserController {
     @PostMapping("/delTopic")
     @ResponseBody
     public CommonResult delTopic(String topicId) {
+        // 调用topicService的delTopic方法删除该话题  返回CommonResult对象，表示删除操作的结果
         return topicService.delTopic(topicId);
     }
 
@@ -487,19 +546,23 @@ public class UserController {
     @PostMapping("/saveCommentT")
     @ResponseBody
     public CommonResult userSaveCommentT(HttpServletRequest request, String topicId, String commentTContent,String commentTId) {
+        // 判断话题ID和评论内容是否为空
         if (StrUtil.isBlank(topicId) || StrUtil.isBlank(commentTContent)) {
             return CommonResult.failed("评论失败，请刷新页面重试");
         }
+        // 判断评论内容的长度是否在1-800个字符之间
         if (commentTContent.isEmpty() || commentTContent.length() > 800) {
             return CommonResult.failed("评论内容在1-800个字符之间！");
         }
-
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
+        // 判断用户是否登录过期
         if (Objects.isNull(user)) {
             return CommonResult.failed("客官！您的登录过期，请从新登录哦");
         }
         String userId = user.getUserId();
 
+        // 创建一个CommentT对象，设置话题ID、用户ID、评论内容、评论时间和点赞数
         CommentT commentT1 = new CommentT();
         commentT1.setTopicId(topicId);
         commentT1.setUserId(userId);
@@ -507,20 +570,25 @@ public class UserController {
         commentT1.setCommentTTime(LocalDateTime.now());
         commentT1.setCommentTGoodNumber(0);
 
+        // 调用commentTService的save方法保存评论信息
         if (commentTService.save(commentT1)) {
             CommentTVo commentTVo = new CommentTVo();
             BeanUtils.copyProperties(commentT1, commentTVo);
             commentTVo.setUserName(
-                    userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserId, commentTVo.getUserId()).select(User::getUserName)).getUserName()
+                    userService.getOne(Wrappers.<User>lambdaQuery()
+                                    .eq(User::getUserId, commentTVo.getUserId())
+                                    .select(User::getUserName)).getUserName()
             );
+            // 创建一个CommentTVo对象，将CommentT对象的属性复制到CommentTVo对象中  设置用户名和评论时间
             commentTVo.setCommentTTime(DateUtil.format(commentT1.getCommentTTime(),"yyyy-MM-dd HH:mm:ss"));
+            // 返回成功的结果，并将CommentTVo对象作为数据返回
             return CommonResult.success(commentTVo);
         }
         return CommonResult.failed("评论失败");
     }
 
     /**
-     * 用户评论
+     * 用户评论文章
      *
      * @param request
      * @param articleId
@@ -530,26 +598,23 @@ public class UserController {
     @PostMapping("/saveComment")
     @ResponseBody
     public CommonResult userSaveComment(HttpServletRequest request, String articleId, String commentContent,String commentId) {
+
+        // 检查文章ID和评论内容是否为空
         if (StrUtil.isBlank(articleId) || StrUtil.isBlank(commentContent)) {
             return CommonResult.failed("评论失败，请刷新页面重试");
         }
+
+        // 检查评论内容的长度是否在1到800个
         if (commentContent.isEmpty() || commentContent.length() > 800) {
             return CommonResult.failed("评论内容在1-800个字符之间！");
         }
 
+        // 从HttpServletRequest对象中获取用户信息
         User user = (User) request.getSession().getAttribute("user");
-        if (Objects.isNull(user)) {
-            return CommonResult.failed("客官！您的登录过期，请从新登录哦");
+        if (Objects.isNull(user)) { // 是否为空
+            return CommonResult.failed("您的登录过期，请从新登录哦");
         }
         String userId = user.getUserId();
-
-
-//        Comment comment = commentService.getOne(Wrappers.<Comment>lambdaQuery().eq(Comment::getUserId, userId).select(Comment::getCommentTime).orderByDesc(Comment::getCommentTime), false);
-//        if (Objects.nonNull(comment) && Objects.nonNull(comment.getCommentTime())) {
-//            if ((comment.getCommentTime().plusSeconds(10000)) > System.currentTimeMillis()) {
-//                return CommonResult.failed("客官您评论太快啦~~，休息一下吧");
-//            }
-//        }
 
         Comment comment1 = new Comment();
         comment1.setArticleId(articleId);
@@ -558,11 +623,16 @@ public class UserController {
         comment1.setCommentTime(LocalDateTime.now());
         comment1.setCommentGoodNumber(0);
 
+        // 调用commentService的save方法保存评论
         if (commentService.save(comment1)) {
             CommentVo commentVo = new CommentVo();
+            // 如果保存成功，则将Comment对象转换为CommentVo对象
             BeanUtils.copyProperties(comment1, commentVo);
+            // 设置用户名和评论时间
             commentVo.setUserName(
-                    userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserId, commentVo.getUserId()).select(User::getUserName)).getUserName()
+                    userService.getOne(Wrappers.<User>lambdaQuery()
+                            .eq(User::getUserId, commentVo.getUserId())
+                            .select(User::getUserName)).getUserName()
             );
             commentVo.setCommentTime(DateUtil.format(comment1.getCommentTime(),"yyyy-MM-dd HH:mm:ss"));
             return CommonResult.success(commentVo);
@@ -587,19 +657,28 @@ public class UserController {
 //            return CommonResult.failed("评论内容在1-800个字符之间！");
 //        }
 //
-//
 //        User user = (User) request.getSession().getAttribute("user");
 //        if (Objects.isNull(user)) {
 //            return CommonResult.failed("客官！您的登录过期，请从新登录哦");
 //        }
+//
 //        String userId = user.getUserId();
 //
-//
-//        CommentReply commentReply = ICommentReplyService.getOne(Wrappers.<CommentReply>lambdaQuery().eq(CommentReply::getUserId, userId).select(Comment::getCommentTime).orderByDesc(Comment::getCommentTime), false);
-//        if (Objects.nonNull(comment) && Objects.nonNull(comment.getCommentTime())) {
-//            if ((comment.getCommentTime().getTime() + 10000) > System.currentTimeMillis()) {
-//                return CommonResult.failed("客官您评论太快啦~~，休息一下吧");
-//            }
+//        CommentReply commentReply = new CommentReply();
+//        commentReply.setCommentId(commentId);
+//        commentReply.setReArticleId(articleId);
+//        commentReply.setReplyUserId(userId);
+//        commentReply.setReplyContent(commentContent);
+//        commentReply.setRCommentTime(LocalDateTime.now());
+//        commentReply.setCommentGoodNumber(0);
+//        if (commentReplyService.save(commentReply)) {
+//            CommentReplyVo commentReplyVo = new CommentReplyVo();
+//            BeanUtils.copyProperties(commentReply, commentReplyVo);
+//            commentReplyVo.setUserName(userService.getOne(Wrappers.<User>lambdaQuery().eq(User::getUserId, commentReplyVo.getUserId()).select(User::getUserName)).getUserName());
+//            commentReplyVo.setCommentTime(DateUtil.format(commentReply1.getCommentTime(),"yyyy-MM-dd HH:mm:ss"));
+//            return CommonResult.success(commentReplyVo);
 //        }
+//        return CommonResult.failed("评论失败");
+//
 //    }
 }

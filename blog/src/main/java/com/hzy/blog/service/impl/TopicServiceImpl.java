@@ -51,6 +51,7 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
     private IUserCollectionTopicService userCollectionTopicService;
     @Resource
     private IUploadFileListService uploadFileListService;
+
     /**
      * 话题列表
      *

@@ -1,6 +1,6 @@
 <#include "../import/top.ftl">
 <#include "../import/navbar.ftl">
-<style>
+<style xmlns="http://www.w3.org/1999/html">
     .comments-list {
         margin-left: 25px;
     }
@@ -112,7 +112,17 @@
                 </section>
                 <footer>
                     <div class = "col-xs-12" id = "commentListBox">
-
+<#--                        <div class="content">-->
+<#--                            <div class="pull-right text-muted">20211212</div>-->
+<#--                            <div>-->
+<#--                                <strong>-->
+<#--                                    <i class="icon icon-user"></i>张三-->
+<#--                                </strong>-->
+<#--                                <span class="text-muted"><a href="javascript:void(0);">回复</a></span>-->
+<#--                            </div>-->
+<#--                            <div class="text">你好你好</div>-->
+<#--                            <div class="comments-list" id="commentReplyBox"></div>-->
+<#--                        </div>-->
                     </div>
 
 
@@ -249,7 +259,7 @@
                 commentContent: commentContent
             },
             function (data) {
-                if (data.code == 200) {
+                if (data.code === 200) {
                     zuiSuccessMsg("评论成功~");
                     $('#commentContent').val("");
                     addCommentItem(data.data.commentTime, data.data.commentGoodNumber, data.data.userName, data.data.commentContent, data.data.commentId, 1, 0)
@@ -359,10 +369,11 @@
             '<strong>' +
             '<i class="icon-user"></i>' + userName + ' 说：' +
             '</strong>' +
+            '<span class="hoverPalm llBox" onclick="commentReply(\'' + commentId + '\')"><i class="icon-edit"></i> 回复</span>' +
             '</div>' +
             '<div class="text">&emsp;&emsp;' + commentContent + '</div>' +
             '<div class="actions">'
-            // '<span class="hoverPalm llBox" onclick="commentReply(\'' + commentId + '\')"><i class="icon-edit"></i> 回复</span>';
+            // ;
 
         if (isGoodComment != null && isGoodComment === 1) {
             commentHtml += ' <span class="hoverPalm llBox goodCommentBgColor" onclick="goodComment(this,\'' + commentId + '\')"><i class="icon-thumbs-o-up"></i> 点赞 ' + commentGoodNumber + '次</span>';
