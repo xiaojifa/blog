@@ -78,6 +78,26 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
     }
 
     /**
+     * 保存话题信息：
+     * 首先从请求中获取用户信息，
+     * 然后根据传入的对象创建一个新的对象，
+     * 并设置相应的属性值
+     * 如点赞数、浏览数、热度和收藏数等。
+     * 最后调用saveOrUpdate方法保存或更新话题信息。
+     *
+     * 保存话题标签：
+     * 首先获取传入的话题标签ID数组，
+     * 然后删除原先的话题标签数据。
+     * 接着遍历话题标签ID数组，为每个标签ID创建一个对象，
+     * 并设置相应的属性值。
+     * 最后调用topicTagListService.saveBatch方法批量保存话题标签。
+     *
+     * 返回操作结果：
+     * 在操作完成后，
+     * 从servletContext中移除名为"indexTopicList"的属性，
+     * 然后返回操作成功的提示信息。
+     */
+    /**
      * 发布话题方法
      *
      * @param publishTopicActionDto
@@ -110,7 +130,8 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
         String[] topicTagIds = publishTopicActionDto.getTopicTagIds();
         if (Objects.nonNull(topicTagIds) && topicTagIds.length > 0) {
             //删除原先的标签数据
-            topicTagListService.remove(Wrappers.<TopicTagList>lambdaQuery().eq(TopicTagList::getTopicId, topic.getTopicId()));
+            topicTagListService.remove(Wrappers.<TopicTagList>lambdaQuery()
+                    .eq(TopicTagList::getTopicId, topic.getTopicId()));
         }
 
         ArrayList<TopicTagList> topicTagLists = new ArrayList<>();
@@ -129,6 +150,17 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
         return CommonResult.success("操作成功");
     }
 
+    /**
+     * 首先判断传入的topicId是否为空，如果为空则返回删除失败的提示信息。
+     * 根据topicId查询话题信息，如果查询结果为空，则返回删除失败的提示信息。
+     * 调用removeById方法删除话题。
+     * 查询与该话题相关的评论列表，如果评论列表不为空，则获取评论ID列表，
+     * 并调用commentService.removeByIds方法批量删除评论。同时，根据评论ID列表删除对应的回复信息。
+     * 删除与该话题相关的标签信息。
+     * 删除用户收藏的话题信息。
+     * 从servletContext中移除名为"topicTypeList"的属性。
+     * 返回删除成功的提示信息。
+     */
     /**
      * 删除话题
      *
@@ -190,6 +222,13 @@ public class TopicServiceImpl extends ServiceImpl<TopicMapper, Topic> implements
         return topicMapper.getTopic(topicId);
     }
 
+    /**
+     * 首先判断用户是否已经收藏过该话题，如果已经收藏则返回提示信息。
+     * 创建一个新的UserCollectionTopic对象，并设置相应的属性值，包括用户ID、话题ID和收藏时间。
+     * 调用userCollectionTopicService.save方法保存收藏记录。
+     * 查询被收藏的话题信息，如果查询结果不为空，则将话题的收藏次数加1，并更新话题信息。
+     * 返回收藏成功的提示信息。
+     */
     /**
      * 收藏话题
      *

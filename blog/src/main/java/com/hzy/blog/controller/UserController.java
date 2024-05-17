@@ -145,12 +145,32 @@ public class UserController {
                             Topic::getTopicLookNumber,
                             Topic::getTopicTitle);
             IPage<Topic> topicIPage = topicService.page(topicPage, wrapper);
-            // 将结果添加到Model对象中
+            // 将结果添加到Model对象中user_collection_article
             model.addAttribute("topicIPage", CommonPage.restPage(topicIPage));
         }
 
         // 返回"/user/collectionList"视图名称
         return "/user/collectionList";
+    }
+
+    /**
+     * 用户收藏
+     *
+     * @param pageNumber
+     * @return
+     */
+    @GetMapping("/topic/list")
+    public String topicList(HttpServletRequest request, Integer pageNumber, Model model) {
+        // 从HttpServletRequest对象中获取用户信息
+        User user = (User) request.getSession().getAttribute("user");
+        // 创建一个Page对象来分页查询话题
+        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
+        // 调用topicService的topicList方法获取话题列表
+        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, null);
+        // 将结果添加到Model对象中
+        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
+        // 返回"/user/topicList"视图名称
+        return "/user/topicList";
     }
 
     /**
@@ -282,26 +302,6 @@ public class UserController {
         }
         // 调用topicService的publishTopicAction方法发布话题
         return topicService.publishTopicAction(request, publishTopicActionDto);
-    }
-
-    /**
-     * 用户收藏
-     *
-     * @param pageNumber
-     * @return
-     */
-    @GetMapping("/topic/list")
-    public String topicList(HttpServletRequest request, Integer pageNumber, Model model) {
-        // 从HttpServletRequest对象中获取用户信息
-        User user = (User) request.getSession().getAttribute("user");
-        // 创建一个Page对象来分页查询话题
-        Page<TopicVo> topicPage = new Page<>(pageNumber, 24);
-        // 调用topicService的topicList方法获取话题列表
-        IPage<TopicVo> topicVoIPage = topicService.topicList(topicPage, null, null);
-        // 将结果添加到Model对象中
-        model.addAttribute("topicVoIPage", CommonPage.restPage(topicVoIPage));
-        // 返回"/user/topicList"视图名称
-        return "/user/topicList";
     }
 
     /**
@@ -442,22 +442,12 @@ public class UserController {
         }
         User serviceById = userService.getById(user.getUserId());
         if(Objects.isNull(serviceById)){
-            session.setAttribute("user",serviceById);
+            session.setAttribute("user", serviceById);
         }
         if (Objects.isNull(serviceById.getUserPublishArticle()) || serviceById.getUserPublishArticle() != 1) {
             return CommonResult.failed("当前您还没有权限发布，请联系管理员");
         }
         if (Objects.nonNull(articleCoverFile)) {
-//            //判断是否上传的图片，是否是我们指定的像素
-//            BufferedImage read = ImageIO.read(articleCoverFile.getInputStream());
-//            if (Objects.isNull(read)) {
-//                return CommonResult.failed("请上传图片文件");
-//            }
-//            int width = read.getWidth();
-//            int height = read.getHeight();
-//            if (width != 250 || height != 170) {
-//                return CommonResult.failed("图片的像素为 250px * 170px");
-//            }
             publishArticleActionDto.setArticleCoverUrl(uploadFileListService.getUploadFileUrl(articleCoverFile));
         }
         return articleService.publishArticleAction(request, publishArticleActionDto);

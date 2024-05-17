@@ -33,7 +33,7 @@
                                <#if (articleType.articleTypeTreeVoList)?? && (articleType.articleTypeTreeVoList)?size gt 0>
                                    <ul class="dropdown-menu" role="menu">
                                        <#list (articleType.articleTypeTreeVoList) as articleTypeTreeVo>
-                                            <li><a href="/article/list?articleTypeId=${(articleTypeTreeVo.articleTypeId)!}">${(articleTypeTreeVo.articleTypeName)!}</a></li>
+                                            <li><a href="article/list?articleTypeId=${(articleTypeTreeVo.articleTypeId)!}">${(articleTypeTreeVo.articleTypeName)!}</a></li>
                                        </#list>
                                    </ul>
                                </#if>

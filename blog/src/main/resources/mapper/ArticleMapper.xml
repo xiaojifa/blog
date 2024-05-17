@@ -115,7 +115,22 @@
                 and atl.article_tag_id = #{articleTagId}
             </if>
         </where>
-
     </select>
+
+<!--    <select id="typeArticleList" resultType="com.hzy.blog.vo.ArticleVo">-->
+<!--        SELECT-->
+<!--        aty.article_type_id,-->
+<!--        aty.article_type_name,-->
+<!--        FROM-->
+<!--        article_type aty-->
+<!--        LEFT JOIN article AS at ON aty.article_type_id = at.article_type_id-->
+<!--        <where>-->
+<!--            not ISNULL(aty.article_title)-->
+<!--            <if test="articleTypeId != null and articleTypeId != '' ">-->
+<!--                and aty.article_type_id = #{articleTypeId}-->
+<!--            </if>-->
+<!--        </where>-->
+
+<!--    </select>-->
 
 </mapper>

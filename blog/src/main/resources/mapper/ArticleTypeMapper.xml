@@ -13,9 +13,11 @@
     <select id="getIndexArticleTypeList" resultType="com.hzy.blog.vo.ArticleTypeTreeVo">
         SELECT
             aty.article_type_id,
-            aty.article_type_name
+            aty.article_type_name,
+            at.article_title
         FROM
             article_type aty
+        LEFT JOIN article AS at ON aty.article_type_id = at.article_type_id
         WHERE 1=1
         <choose>
             <when test="articleTypeParentId != null and articleTypeParentId != ''">

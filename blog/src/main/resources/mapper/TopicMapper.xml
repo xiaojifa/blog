@@ -22,6 +22,8 @@
         <include refid="topicVoInfoSql"></include>
         <where>
             <if test="topicTitle != null and topicTitle != ''">
+                // 在查询中添加一个LIKE子句，用于模糊匹配话题标题
+                and trt.topic_type_id = #{topicTypeId}
                 and trt.topic_title like concat ('%',#{topicTitle},'%')
             </if>
             <if test="userId != null and userId != ''">
