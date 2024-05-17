@@ -16,6 +16,7 @@
                art.article_look_number,
                art.article_collection_number,
                artt.article_type_name
+
         FROM article art
                  LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
                  LEFT JOIN user  u ON u.user_id = art.user_id
@@ -60,6 +61,7 @@
                artt.article_type_name
         FROM article art
                  LEFT JOIN article_type AS artt ON art.article_type_id = artt.article_type_id
+
         ORDER BY art.article_add_time desc LIMIT 20
     </select>
 
@@ -70,6 +72,7 @@
             art.article_type_id,
             art.article_cover_url,
             art.article_context,
+        art.article_vip,
             u.user_id,
             u.user_name,
             u.user_vip,

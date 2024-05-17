@@ -81,7 +81,9 @@
             <#list indexArticleList as indexArticle>
                 <div class="col-xs-6 col-sm-3" style="padding: 2px">
                     <div class = "card container-fluid my-navbar3">
-                        <a href = "/article?articleId=${(indexArticle.articleId)!}" style = "text-decoration:none">
+
+                        <a href = "/article?articleId=${(indexArticle.articleId)!}&userVip=0" style = "text-decoration:none">
+
                             <img class = "cardimg" src = "${(indexArticle.articleCoverUrl)!}"
                                  alt = "${(indexArticle.articleTitle)!}">
                             <div class = "card-heading"><strong>${(indexArticle.articleTitle)!}</strong></div>
