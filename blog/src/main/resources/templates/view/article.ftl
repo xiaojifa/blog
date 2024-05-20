@@ -161,29 +161,29 @@
 </div>
 
 <!-- 悬浮框结构 -->
-<div class="go-top2">
-    <div class="panel-heading">
-        <i class="icon-paper-clip"></i>作者资料
-    </div>
-    <div class="panel-body">
-        <span class="label"><i class="icon-time"></i> 注册时间：</span> <span
-                class="label label-success">${(article.userRegisterTime)}</span>
-        <br/>
-        <span class="label"><i class="icon-user"></i> 用户名&emsp;：</span> <span
-                class="label label-success">${(article.userName)!}</span>
-        <br/>
-        <span class="label"><i class="icon-user"></i> VIP&emsp;：</span> <span
-                class="label label-success">${(article.userVip)!}</span>
-        <br/>
-        <span class="label"><i class="icon-leaf"></i> 状态&emsp;&emsp;：</span>
-        <#if (user.userFrozen)?? && (article.userFrozen)==1>
-            <span class="label label-danger">冻结</span>
-        <#else >
-            <span class="label label-success">正常</span>
-        </#if>
-        <br/>
-    </div>
-</div>
+<#--<div class="go-top2">-->
+<#--    <div class="panel-heading">-->
+<#--        <i class="icon-paper-clip"></i>作者资料-->
+<#--    </div>-->
+<#--    <div class="panel-body">-->
+<#--        <span class="label"><i class="icon-time"></i> 注册时间：</span> <span-->
+<#--                class="label label-success">${(article.userRegisterTime)}</span>-->
+<#--        <br/>-->
+<#--        <span class="label"><i class="icon-user"></i> 用户名&emsp;：</span> <span-->
+<#--                class="label label-success">${(article.userName)!}</span>-->
+<#--        <br/>-->
+<#--        <span class="label"><i class="icon-user"></i> VIP&emsp;：</span> <span-->
+<#--                class="label label-success">${(article.userVip)!}</span>-->
+<#--        <br/>-->
+<#--        <span class="label"><i class="icon-leaf"></i> 状态&emsp;&emsp;：</span>-->
+<#--        <#if (user.userFrozen)?? && (article.userFrozen)==1>-->
+<#--            <span class="label label-danger">冻结</span>-->
+<#--        <#else >-->
+<#--            <span class="label label-success">正常</span>-->
+<#--        </#if>-->
+<#--        <br/>-->
+<#--    </div>-->
+<#--</div>-->
 
 <script>
     $("#commentReplyBtn").hide();

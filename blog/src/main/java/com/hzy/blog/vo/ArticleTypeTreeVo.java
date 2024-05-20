@@ -13,5 +13,6 @@ public class ArticleTypeTreeVo {
     private String articleTypeId;
     private String articleTypeName;
     private List<ArticleTypeTreeVo> articleTypeTreeVoList;
+    private String articleTitle;
     private List<Article> articleList;
 }

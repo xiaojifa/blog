@@ -4,6 +4,15 @@ server:
     session:
       #Session超时时间设置为5小时，单位是秒，默认是30分钟
       timeout: 18000
+
+xf:
+  config:
+    hostUrl: https://spark-api.xf-yun.com/v3.1/chat
+    app-id: 36d64ea6
+    apiSecret: YzUzZTZjYTBkZmQ1ZmE5ZTA5NDA2YmZk
+    apiKey: ffa3307e813fd891777e03c922ecccad
+    maxResponseTime: 30
+
 spring:
   thymeleaf:
     prefix: classpath:/templates/
