@@ -5,6 +5,7 @@
                 <li><a href="/user/manager"><i class="icon-paper-clip"></i>我的资料</a></li>
                 <li><a href="/user/collection/list?pageNumber=1"><i class="icon-tags"></i>我的收藏</a></li>
                 <li><a href="/user/myArticleList?pageNumber=1"><i class="icon-book"></i>我的文章</a></li>
+                <li><a href=" http://localhost:2004/"><i class="icon-dollar"></i>Vip中心</a></li>
             </ul>
         </nav>
     </div>

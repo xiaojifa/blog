@@ -209,6 +209,7 @@ public class ViewController {
     public CommonResult userLogin(HttpServletRequest request, UserInfoDto userInfoDto) {
         HttpSession session = request.getSession();
         String verifyCode = userInfoDto.getVerifyCode();
+        session.setAttribute("userName", userInfoDto.getUserName());
         if (StrUtil.isBlank(verifyCode) || !verifyCode.equals(session.getAttribute("circleCaptchaCode"))) {
             session.removeAttribute("circleCaptchaCode");
             return CommonResult.failed("验证码不正确");
@@ -510,9 +511,11 @@ public class ViewController {
      * @return
      */
     @GetMapping("/article")
-    public String articleView(HttpServletRequest request, String articleId,String userVip,Model model) {
+    public String articleView(HttpServletRequest request, String articleId,Model model) {
         HttpSession session = request.getSession();
+      User user= (User) session.getAttribute("user");
 
+       Integer userVip=user.getUserVip();
         ArticleVo articleVo = articleService.getArticle(articleId);
         if (Objects.isNull(articleVo)) {
             return "redirect:/";
@@ -543,9 +546,9 @@ public class ViewController {
             model.addAttribute("articleType", articleType);
         }
 
-        if(Integer.parseInt(userVip)==1){
+        if(userVip==1){
     return "/view/article";
-} else if (Integer.parseInt(userVip) == 0 && articleVo.getArticleVip().equals(Integer.parseInt(userVip))) {
+} else if (userVip == 0 && articleVo.getArticleVip().equals(userVip)) {
     return "/view/article";
 }else {
             model.addAttribute("message", "Vip文章，您还不是Vip");

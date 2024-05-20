@@ -24,4 +24,6 @@ public interface UserMapper extends BaseMapper<User> {
      * @return
      */
     UserVo getUser(@Param("userId") String userId);
+
+
 }

@@ -3,12 +3,14 @@ package com.hzy.blog.controller;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.SecureUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.hzy.blog.dto.article.PublishArticleActionDto;
 import com.hzy.blog.dto.topic.PublishTopicActionDto;
+import com.hzy.blog.dto.user.UserDto;
 import com.hzy.blog.entity.*;
 import com.hzy.blog.service.*;
 import com.hzy.blog.utils.CommonPage;
@@ -114,7 +116,26 @@ public class UserController {
     public String userManager() {
         return "/user/userManager";
     }
+    @GetMapping("/managers")
+    public String userManager(HttpServletRequest request) {
+        userUpdate(request);
+        return "/user/userManager";
+    }
+    /**
+     * 用户修改VIP
+     *
+     *
+     */
+    public CommonResult userUpdate(HttpServletRequest request) {
+        HttpSession session = request.getSession();
+        User user= (User) session.getAttribute("user");
+       user.setUserVip(1);
+        if (userService.updateById(user)) {
+            return CommonResult.success("修改成功");
+        }
 
+        return CommonResult.failed("修改失败，请重试");
+    }
     /**
      * 用户收藏话题
      *

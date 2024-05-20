@@ -20,6 +20,13 @@
                 <span class="label label-success">正常</span>
             </#if>
             <br/>
+            <span class="label"><i class="icon-vip"></i> 会员&emsp;&emsp;：</span>
+            <#if (user.userVip)?? && (user.userVip)==1>
+                <span class="label label-danger">Vip</span>
+            <#else >
+                <span class="label label-success">普通用户</span>
+            </#if>
+            <br/>
         </div>
     </div>
 </div>
