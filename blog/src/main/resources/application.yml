@@ -8,9 +8,9 @@ server:
 xf:
   config:
     hostUrl: https://spark-api.xf-yun.com/v3.1/chat
-    app-id: 36d64ea6
-    apiSecret: YzUzZTZjYTBkZmQ1ZmE5ZTA5NDA2YmZk
-    apiKey: ffa3307e813fd891777e03c922ecccad
+    app-id: 7a7e752b
+    apiSecret: NDk1NWJmMmJjODlhMjVjODgxYzUxZTc2
+    apiKey: 8afbcb2eb0e4b67c02063e035ffd73e1
     maxResponseTime: 30
 
 spring:
@@ -20,7 +20,7 @@ spring:
   datasource:
     url: jdbc:mysql://localhost:3306/hzy2003?useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai&zeroDateTimeBehavior=CONVERT_TO_NULL
     username: root
-    password: 128128
+    password: root
     type: com.alibaba.druid.pool.DruidDataSource
     driver-class-name: com.mysql.cj.jdbc.Driver
 
@@ -62,5 +62,5 @@ alipay:
   appId: 9021000136641333
   appPrivateKey: MIIEvAIBADANBgkqhkiG9w0BAQEFAASCBKYwggSiAgEAAoIBAQCBXgS5h6z3OePZPKubW8IY42xc1PUmRQpE30/1JyE//igpo2qSlozhhoMWMuGFaF+Ihi0Jg9LEBBs+1x9K8A29rAF5375r55h7RyETAT/yR8PgDBPvg6BmEWRvurOi7X5KC37MTeGbEUQR9ApXHgEcKxYX0IEmXkGGNTzH36eKrYA8VNyHDTD3O//1c1sxCQclH0TwPEtE5srYaxHP+E1AuYtUpTYVEvM3GWXMbMbfnwfGmGCWk171tJHcLYcfuK099fCJsdsRAkZyfRyvikdQYUs9s/eZIe0v/dngDOrPBNGnmmux7LqTQeqlQz7fzPd0GAbGfK7GWBUccPM5Hr7TAgMBAAECggEAe7Gw5NCkgnLYuFL5Zn/S08dISm7YxDHJQtce9bHnae+S6VU2Rlkq9UyPNH+MAOouRjS9BVcFBKVEg85fPmDPUqcPdj+ILFZyBpWZOzm7seYKlMQXn7EEgfNpTCeBMWzRjuz03VYuO/3DT0M/S9MFjrBn3HdhtZT0I+XtatMfuEkVrWzoS1hQPbVp3rxloFovRs9csYNdjZBfXQzpp6yQGFl9zcuC0pczFEIb6GjyM1FCb/bL8OIjvYjMWVohy/NnWdMH0YfVZXPyuMYodZJOofCVPwj6jCP8wFc1Qomt7ms0yo9NJBNUJNVbi/R3Jbuaz127i7gLUuZSb0+Fm1DjwQKBgQDFLrs6bTxPFgS6MpUJ1crWj7hz9ggaIca/BPy+P6rqvMd61J+RFDdq/3cZ6XSTajUbaGPy3O6HS3dE34MtsD8LkxNj+mJgiXLtcwtSGH5c+D1IUQCW90YmxPzLCEGKJTm6GoeiAXEQ0paoK0Is2BaGYSoqWkRprzL2D3z/OFQYIQKBgQCn9MVmkXLfP6qagL77Ue/x1jigFqqObz1Tf1p6GCGGhzDmiMR6B3i8z2hqIeN3I7WFAPW9R8j2Z4tDCNJKijmjLqf9vfRLROK9uBUJZz+7rBwnkETSUZqRvomQMbaQnufDGH5cPMOD58J1c8Yjjz2tOggnmGeMpkjiDtHzfjrocwKBgCOcePvoVogB9gCaugf4sJVnh2yJ9pShnP9Kq0rAvOGADpbEZ70P5aJRWPU5EHC/MbAtfj+SXxHYM0YhB9PsjLZObaYUxkehCzyPFnBRNCEeRBMXbf/V0LmXwf/5Eb0dU/ukZvJ/SCg9oC/nACCRNiA21CKqAskDdzSxP2XoimeBAoGAK+fEoqdrDAkso+77/d7RhrqlWtQSCeHyeh1UnY4pVW2Jzvn5wpypZ1IgzX3GZKKlFPvHQY++bQtsUD3CG1I+9vV/XMmHTxXW4Bl7BlZDRuAbDAyesQw8B9VzSIp2Wx/vHgUNIzePNLAlGWcGaM1NJjeBYjho+U+Oxelx4OEirRkCgYB4XQjxqPm1bXiZb7NWKZjAjMFxzLk+9r1gsg4rnEAFzg7ooj/7mVQqV/dmj34V/68Mhy60z3BSNruVmVBP3hzqTNrXD/B2oAhR7NdoW4KXQ+EIN8jc/sIyT38lel1Q2W0vddNdWAFTXK9I9ZXlmDM/XCGE6w1oSFumYtFToJbxKQ==
   alipayPublicKey: MIIBIjANBgkqhkiG9w0BAQEFAAOCAQ8AMIIBCgKCAQEAoPc/A6kkcptLfJqdvk3vKU+HF9bTQlGEQTltd6ykA/IVJCo+CanpB8M9kxwGR6Pxzh6MJ8se+fCFosjOMlghzgBYN5QG/gS427+r0F6wJKRjPAGNL2Hzq+KRWjpOOAjncmPUb3bxKLgRULz6KSIyTIhwS0GCFLlFAIm2S48rungTyCU4WYKKZWqAdFeUMAoCDF152NJT57hnr7fw2evWjf5X3S7r2oP/Pz685DNYXugrNoN6HxU2QqE1KHNHDqDUbGKjv3lgmCG8zwdRixmCieIvdEoo6y/WXoMRBITGwT+Oku6DwA9LIa5lpjJ8XvzgPLt6vfbCHoccPqOHKSAu3QIDAQAB
-  notifyUrl:    http://zkav3a.natappfree.cc/alipay/notify
-  returnUrl:    http://localhost:2003/user/managers
+  notifyUrl: https://zkav3a.natappfree.cc/alipay/notify
+  returnUrl: http://localhost:2003/user/managers

@@ -7,7 +7,10 @@ import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.crypto.SecureUtil;
+import com.hzy.blog.entity.bean.ResultBean;
 import com.hzy.blog.vo.*;
+import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.apdplat.word.WordSegmenter;
 import org.apdplat.word.segmentation.Word;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -49,6 +52,7 @@ import java.util.stream.Collectors;
  * @author Fa Xiaoji 14439
  * @date 2024/4/27 19:20
  */
+@Slf4j
 @Controller
 public class ViewController {
 
@@ -84,6 +88,8 @@ public class ViewController {
     private ITopicTypeService topicTypeService;
     @Resource
     private ITopicTagListService topicTagListService;
+    @Resource
+    private IPushService pushService;
 
     /**
      * 清除首页缓存
@@ -100,17 +106,21 @@ public class ViewController {
         return "redirect:/";
     }
 
-    /**
-     * 聊天
-     *
-     * @param message
-     * @return
-     */
-    @MessageMapping("/chat")
-    @SendTo("/topic/messages")
-    public Message sendMessage(Message message) {
-        return message;
-    }
+//    /**
+//     * AI聊天
+//     *
+//     * @param uid
+//     * @param text
+//     * @return
+//     */
+//    @PostMapping ("/chat")
+//    public ResultBean test(String uid, String text) {
+//        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(text)) {
+//            log.error("uid或text不能为空");
+//            return ResultBean.fail("uid或text不能为空");
+//        }
+//        return pushService.pushMessageToXFServer(uid, text);
+//    }
 
     /**
      * 获取图像验证码

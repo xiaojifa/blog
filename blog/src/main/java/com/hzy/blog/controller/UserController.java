@@ -19,6 +19,7 @@ import com.hzy.blog.vo.ArticleVo;
 import com.hzy.blog.vo.CommentTVo;
 import com.hzy.blog.vo.CommentVo;
 import com.hzy.blog.vo.TopicVo;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -45,6 +46,7 @@ import java.util.stream.Collectors;
  * @date 2024/4/14 17:19
  */
 @Controller
+@Slf4j
 @RequestMapping("/user")
 public class UserController {
     @Resource
@@ -79,6 +81,8 @@ public class UserController {
     private ITopicTagService topicTagService;
     @Resource
     private ITopicTagListService topicTagListService;
+    @Resource
+    private IPushService pushService;
 
     /**
      * 文件上传
@@ -106,6 +110,14 @@ public class UserController {
         return uploadFileListService.getUploadFileUrl(file);
     }
 
+//    @GetMapping("/test")
+//    public ResultBean test(String uid, String text) {
+//        if (StringUtils.isEmpty(uid) || StringUtils.isEmpty(text)) {
+//            log.error("uid或text不能为空");
+//            return ResultBean.fail("uid或text不能为空");
+//        }
+//        return pushService.pushMessageToXFServer(uid, text);
+//    }
 
     /**
      * 用户管理页面

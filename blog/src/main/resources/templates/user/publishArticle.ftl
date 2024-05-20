@@ -103,14 +103,11 @@
                             </div>
                         </div>
                     </#if>
-
                 </form>
             </div>
-
-
         </div>
     </div>
-</div>
+
 <div class="col-xs-12">
     <div class="panel">
         <div class="panel-body">
