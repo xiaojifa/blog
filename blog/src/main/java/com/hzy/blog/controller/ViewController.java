@@ -164,7 +164,6 @@ public class ViewController {
             session.removeAttribute("circleCaptchaCode");
             return CommonResult.failed("验证码不正确");
         }
-
         //用户名和密码是否相同
         if (userInfoDto.getUserName().equals(userInfoDto.getUserPassword())) {
             session.removeAttribute("circleCaptchaCode");
@@ -404,9 +403,7 @@ public class ViewController {
 
         //文章分类名称
         if (StrUtil.isNotBlank(articleTypeId)) {
-            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery()
-                    .eq(ArticleType::getArticleTypeId, articleTypeId)
-                    .select(ArticleType::getArticleTypeName), false);
+            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery().eq(ArticleType::getArticleTypeId, articleTypeId).select(ArticleType::getArticleTypeName), false);
             model.addAttribute("articleTypeName", articleType.getArticleTypeName());
             model.addAttribute("articleTypeId", articleTypeId);
         }
@@ -525,18 +522,16 @@ public class ViewController {
      */
     @GetMapping("/article")
     public String articleView(HttpServletRequest request, String articleId,Model model) {
+        HttpSession session = request.getSession();
+      User user= (User) session.getAttribute("user");
 
-        User user = (User) request.getSession().getAttribute("user");
-        Integer userVip=user.getUserVip();
-        Admin admin=(Admin) request.getSession().getAttribute("admin");
-
+       Integer userVip=user.getUserVip();
+       Admin admin=(Admin) session.getAttribute("admin");
         ArticleVo articleVo = articleService.getArticle(articleId);
         if (Objects.isNull(articleVo)) {
             return "redirect:/";
         }
-        Article article = articleService.getOne(Wrappers.<Article>lambdaQuery()
-                .eq(Article::getArticleId, articleVo.getArticleId())
-                .select(Article::getArticleId, Article::getArticleLookNumber), false);
+        Article article = articleService.getOne(Wrappers.<Article>lambdaQuery().eq(Article::getArticleId, articleVo.getArticleId()).select(Article::getArticleId, Article::getArticleLookNumber), false);
 
         //添加查看次数
         Integer articleLookNumber = article.getArticleLookNumber();
@@ -558,24 +553,56 @@ public class ViewController {
 
         //文章类型
         if (Objects.nonNull(articleVo) && StrUtil.isNotBlank(articleVo.getArticleTypeId())) {
-            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery()
-                    .eq(ArticleType::getArticleTypeId, articleVo.getArticleTypeId())
-                    .select(ArticleType::getArticleTypeName, ArticleType::getArticleTypeId), false);
+            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery().eq(ArticleType::getArticleTypeId, articleVo.getArticleTypeId()).select(ArticleType::getArticleTypeName, ArticleType::getArticleTypeId), false);
             model.addAttribute("articleType", articleType);
         }
-
-        if (userVip == 1) {
-            return "/view/article";
-        } else if (userVip == 0 && articleVo.getArticleVip().equals(userVip)) {
-            return "/view/article";
-        } else {
+ if (userVip==1){
+    return "/view/article";
+} else if (userVip == 0 && articleVo.getArticleVip().equals(userVip)) {
+    return "/view/article";
+}else {
             model.addAttribute("message", "Vip文章，您还不是Vip");
 
-        }
+}
         return "redirect:/";
     }
 
+    @GetMapping("/articles")
+    public String articleView1(HttpServletRequest request, String articleId,Model model) {
 
+
+        ArticleVo articleVo = articleService.getArticle(articleId);
+        if (Objects.isNull(articleVo)) {
+            return "redirect:/";
+        }
+        Article article = articleService.getOne(Wrappers.<Article>lambdaQuery().eq(Article::getArticleId, articleVo.getArticleId()).select(Article::getArticleId, Article::getArticleLookNumber), false);
+
+        //添加查看次数
+        Integer articleLookNumber = article.getArticleLookNumber();
+        if (Objects.isNull(articleLookNumber) || articleLookNumber < 0) {
+            articleLookNumber = 0;
+        }
+        ++articleLookNumber;
+        article.setArticleLookNumber(articleLookNumber);
+        articleService.updateById(article);
+
+        //隐藏作者用户名
+        String userName = articleVo.getUserName();
+        if (StrUtil.isNotBlank(userName)) {
+            articleVo.setUserName(CommonUtils.getHideMiddleStr(userName));
+        }
+
+        //文章
+        model.addAttribute("article", articleVo);
+
+        //文章类型
+        if (Objects.nonNull(articleVo) && StrUtil.isNotBlank(articleVo.getArticleTypeId())) {
+            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery().eq(ArticleType::getArticleTypeId, articleVo.getArticleTypeId()).select(ArticleType::getArticleTypeName, ArticleType::getArticleTypeId), false);
+            model.addAttribute("articleType", articleType);
+        }
+
+        return  "/view/article";
+    }
     /**
      * 获取话题评论列表
      *
