@@ -526,6 +526,51 @@ public class ViewController {
       User user= (User) session.getAttribute("user");
 
        Integer userVip=user.getUserVip();
+       Admin admin=(Admin) session.getAttribute("admin");
+        ArticleVo articleVo = articleService.getArticle(articleId);
+        if (Objects.isNull(articleVo)) {
+            return "redirect:/";
+        }
+        Article article = articleService.getOne(Wrappers.<Article>lambdaQuery().eq(Article::getArticleId, articleVo.getArticleId()).select(Article::getArticleId, Article::getArticleLookNumber), false);
+
+        //添加查看次数
+        Integer articleLookNumber = article.getArticleLookNumber();
+        if (Objects.isNull(articleLookNumber) || articleLookNumber < 0) {
+            articleLookNumber = 0;
+        }
+        ++articleLookNumber;
+        article.setArticleLookNumber(articleLookNumber);
+        articleService.updateById(article);
+
+        //隐藏作者用户名
+        String userName = articleVo.getUserName();
+        if (StrUtil.isNotBlank(userName)) {
+            articleVo.setUserName(CommonUtils.getHideMiddleStr(userName));
+        }
+
+        //文章
+        model.addAttribute("article", articleVo);
+
+        //文章类型
+        if (Objects.nonNull(articleVo) && StrUtil.isNotBlank(articleVo.getArticleTypeId())) {
+            ArticleType articleType = articleTypeService.getOne(Wrappers.<ArticleType>lambdaQuery().eq(ArticleType::getArticleTypeId, articleVo.getArticleTypeId()).select(ArticleType::getArticleTypeName, ArticleType::getArticleTypeId), false);
+            model.addAttribute("articleType", articleType);
+        }
+ if (userVip==1){
+    return "/view/article";
+} else if (userVip == 0 && articleVo.getArticleVip().equals(userVip)) {
+    return "/view/article";
+}else {
+            model.addAttribute("message", "Vip文章，您还不是Vip");
+
+}
+        return "redirect:/";
+    }
+
+    @GetMapping("/articles")
+    public String articleView1(HttpServletRequest request, String articleId,Model model) {
+
+
         ArticleVo articleVo = articleService.getArticle(articleId);
         if (Objects.isNull(articleVo)) {
             return "redirect:/";
@@ -556,18 +601,8 @@ public class ViewController {
             model.addAttribute("articleType", articleType);
         }
 
-        if(userVip==1){
-    return "/view/article";
-} else if (userVip == 0 && articleVo.getArticleVip().equals(userVip)) {
-    return "/view/article";
-}else {
-            model.addAttribute("message", "Vip文章，您还不是Vip");
-
-}
-        return "redirect:/";
+        return  "/view/article";
     }
-
-
     /**
      * 获取话题评论列表
      *

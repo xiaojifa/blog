@@ -59,7 +59,7 @@
                                         class="btn btn-mini"><i
                                             class="icon-remove"></i> 删除
                                 </button>
-                                <a target="_blank" href="/article?articleId=${(articleVo.articleId)!}" class="btn btn-mini"><i class="icon-eye-open"></i> 查看</a>
+                                <a target="_blank" href="/articles?articleId=${(articleVo.articleId)!}" class="btn btn-mini"><i class="icon-eye-open"></i> 查看</a>
                             </div>
                         </td>
                     </tr>
