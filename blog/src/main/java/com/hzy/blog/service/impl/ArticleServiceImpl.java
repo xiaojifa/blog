@@ -80,6 +80,17 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     /**
+     * 首先从请求中获取用户信息，
+     * 然后根据传入的对象创建一个新的Topic对象，并设置相应的属性值。
+     * 最后调用saveOrUpdate方法保存或更新话题信息。
+     *
+     * 首先获取传入的话题标签ID数组，然后删除原先的话题标签数据。
+     * 接着遍历话题标签ID数组，为每个标签ID创建一个TopicTagList对象，并设置相应的属性值。
+     * 最后调用saveBatch方法批量保存话题标签。
+     *
+     * 在操作完成后，从servletContext中移除名为"indexTopicList"的属性
+     */
+    /**
      * 发布文章方法
      *
      * @param publishArticleActionDto
@@ -205,6 +216,12 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         return articleMapper.getArticle(articleId);
     }
 
+    /**
+     * 首先判断用户是否已经收藏过该话题
+     * 创建一个新的UserCollectionTopic对象，并设置相应的属性值
+     * 调用save方法保存收藏记录。
+     * 查询被收藏的话题信息，如果查询结果不为空，则将话题的收藏次数加1，并更新话题信息。
+     */
     /**
      * 收藏文章
      *

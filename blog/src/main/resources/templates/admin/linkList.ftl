@@ -51,6 +51,47 @@
     <#include "../import/nullData.ftl">
 </#if>
 
+<div class="modal fade" id="linkAddModal">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <form action="#" method="post">
+                <div class="modal-header">
+                    <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">×</span><span
+                                class="sr-only">关闭</span></button>
+                    <h4 class="modal-title" id="linkTitle">添加友联</h4>
+                </div>
+                <div class="modal-body">
+                    <input type="hidden" name="linkId" id="linkId">
+                    <div class="form-group">
+                        <label for="linkTitle">友联名称：</label>
+                        <input type="text" class="form-control" name="linkTitle" id="linkTitle"
+                               placeholder="友联名称">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkLogoUrl">友联Logo：</label>
+                        <input type="text" class="form-control" id="linkLogoUrl" name="linkLogoUrl"
+                               placeholder="友联排序">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkUrl">友联连接：</label>
+                        <input type="text" class="form-control" id="linkUrl" name="linkUrl"
+                               placeholder="友联连接">
+                    </div>
+                    <div class="form-group">
+                        <label for="linkSort">友联排序：</label>
+                        <input type="number" class="form-control" id="linkSort" name="linkSort"
+                               placeholder="友联排序">
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                    <button type="button" class="btn btn-primary" onclick="linkAddOrUpdateAction()">保存</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
 <div class="modal fade" id="linkUpdateModal">
     <div class="modal-dialog">
         <div class="modal-content">
@@ -122,10 +163,10 @@
         let linkLogoUrl = $("#linkLogoUrl").val();
         let linkSort = $("#linkSort").val();
 
-        if (!checkNotNull(linkTitle) || !checkNotNull(linkUrl) || !checkNotNull(linkSort)) {
-            zuiMsg("数据填写不完整");
-            return;
-        }
+        // if (!checkNotNull(linkTitle) || !checkNotNull(linkUrl) || !checkNotNull(linkSort)) {
+        //     zuiMsg("数据填写不完整");
+        //     return;
+        // }
 
         $.post("/hzy2003/link/addOrUpdate", {
                 linkId: linkId,

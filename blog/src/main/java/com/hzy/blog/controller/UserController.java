@@ -133,6 +133,7 @@ public class UserController {
         userUpdate(request);
         return "/user/userManager";
     }
+
     /**
      * 用户修改VIP
      *
@@ -148,6 +149,7 @@ public class UserController {
 
         return CommonResult.failed("修改失败，请重试");
     }
+
     /**
      * 用户收藏话题
      *

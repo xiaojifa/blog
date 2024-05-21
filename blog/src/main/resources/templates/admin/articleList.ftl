@@ -30,6 +30,7 @@
                     <th>浏览数</th>
                     <th>点赞数</th>
                     <th>收藏数</th>
+                    <th>VIP</th>
                     <th>操作</th>
                 </tr>
                 </thead>
@@ -50,6 +51,7 @@
                         <td>${(articleVo.articleLookNumber)!}</td>
                         <td>${(articleVo.articleGoodNumber)!}</td>
                         <td>${(articleVo.articleCollectionNumber)!}</td>
+                        <td>${(articleVo.articleVip)!}</td>
                         <td>
                             <div style="text-align: right">
                                 <button onclick="hotArticle('${(articleVo.articleId)!}')" type="button"
